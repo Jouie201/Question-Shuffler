@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Question Shuffler</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <main class="app-shell">
+      <section class="panel">
+        <div class="toolbar">
+          <div class="toolbar-actions">
+            <button id="addQuestionButton" class="secondary-button" type="button" aria-expanded="false">
+              Add Question to Bank
+            </button>
+            <button id="savedQuestionsButton" class="secondary-button" type="button" aria-expanded="false">
+              AZ-400
+            </button>
+            <button id="shuffleButton" class="shuffle-button" type="button">
+              Shuffle Choices
+            </button>
+          </div>
+        </div>
+
+        <div class="question-meta">
+          <span id="questionCount">Question bank ready</span>
+          <span id="shuffleStatus">Choices in original order</span>
+        </div>
+
+        <section id="bankFormPanel" class="bank-form-panel is-hidden" aria-label="Add question form">
+          <section class="form-section" aria-labelledby="multipleChoiceFormTitle">
+            <div class="form-section-header">
+              <h2 id="multipleChoiceFormTitle">Multiple Choice Question</h2>
+              <p class="section-hint">Add a Level 1 question with one or more correct answers.</p>
+            </div>
+
+            <form id="questionForm" class="question-form" novalidate>
+              <div class="form-grid">
+                <label class="form-field form-field-wide">
+                  <span>Question Prompt</span>
+                  <textarea id="questionPromptInput" name="prompt" rows="5" required></textarea>
+                </label>
+
+                <label class="form-field form-field-wide">
+                  <span>Choices</span>
+                  <textarea
+                    id="choicesInput"
+                    name="choices"
+                    rows="6"
+                    placeholder="Paste one choice per line&#10;A. First option&#10;B. Second option&#10;C. Third option"
+                    required
+                  ></textarea>
+                </label>
+
+                <label class="form-field">
+                  <span>Correct Answers</span>
+                  <input
+                    id="answerInput"
+                    name="answer"
+                    type="text"
+                    placeholder="Example: A,C,E"
+                    required
+                  />
+                </label>
+              </div>
+
+              <div class="form-actions">
+                <p id="questionFormNotice" class="submit-notice" hidden></p>
+                <button class="shuffle-button" type="submit">Save to Bank</button>
+              </div>
+            </form>
+          </section>
+
+          <section class="form-section" aria-labelledby="dragDropFormTitle">
+            <div class="form-section-header">
+              <h2 id="dragDropFormTitle">Drag and Drop Question</h2>
+              <p class="section-hint">Add a Level 2 question with draggable options and answer slots.</p>
+            </div>
+
+            <form id="dragQuestionForm" class="question-form" novalidate>
+              <div class="form-grid">
+                <label class="form-field">
+                  <span>Answer Area Layout</span>
+                  <select id="dragLayoutTypeInput" name="dragLayoutType">
+                    <option value="standard">Standard Answer Area</option>
+                    <option value="middle">Middle Answer Area</option>
+                  </select>
+                </label>
+
+                <label class="form-field">
+                  <span>Blank Arrangement</span>
+                  <select id="dragBlankLayoutInput" name="dragBlankLayout">
+                    <option value="vertical">Over and Under Each Other</option>
+                    <option value="horizontal">Beside Each Other</option>
+                  </select>
+                </label>
+
+                <label class="form-field form-field-wide">
+                  <span>Question Prompt</span>
+                  <textarea id="dragPromptInput" name="dragPrompt" rows="4" required></textarea>
+                </label>
+
+                <label class="form-field form-field-wide">
+                  <span>Options</span>
+                  <textarea
+                    id="dragChoicesInput"
+                    name="dragChoices"
+                    rows="5"
+                    placeholder="Paste one draggable option per line"
+                    required
+                  ></textarea>
+                </label>
+
+                <label class="form-field">
+                  <span>How Many Correct Answers</span>
+                  <input
+                    id="dragCorrectAnswerCountInput"
+                    name="dragCorrectAnswerCount"
+                    type="number"
+                    min="1"
+                    step="1"
+                    placeholder="Example: 2"
+                    required
+                  />
+                </label>
+
+                <section id="standardDragFields" class="drag-form-variant form-field-wide">
+                  <div class="form-grid form-grid-single">
+                    <label class="form-field form-field-wide">
+                      <span>Correct Matches</span>
+                      <textarea
+                        id="dragAnswersInput"
+                        name="dragAnswers"
+                        rows="4"
+                        placeholder="Paste one correct option per line in the order the blanks should be checked"
+                        required
+                      ></textarea>
+                      <small>The number of lines here must match the correct-answer count.</small>
+                    </label>
+                  </div>
+                </section>
+
+                <section id="middleDragFields" class="drag-form-variant form-field-wide is-hidden">
+                  <div class="form-grid form-grid-single">
+                    <label class="form-field form-field-wide">
+                      <span>Correct Matches</span>
+                      <textarea
+                        id="dragMiddleAnswersInput"
+                        name="dragMiddleAnswers"
+                        rows="4"
+                        placeholder="Paste one correct option per line in the order the middle blanks should be checked"
+                      ></textarea>
+                      <small>The number of lines here must match the correct-answer count.</small>
+                    </label>
+                  </div>
+                </section>
+              </div>
+
+              <div class="form-actions">
+                <p id="dragFormNotice" class="submit-notice" hidden></p>
+                <button class="shuffle-button" type="submit">Save Drag Question</button>
+              </div>
+            </form>
+          </section>
+
+          <section class="form-section" aria-labelledby="dropdownFormTitle">
+            <div class="form-section-header">
+              <h2 id="dropdownFormTitle">Dropdown Question</h2>
+              <p class="section-hint">Build a sentence with two fill-in-the-blank dropdowns. Type the parts of the sentence around each blank.</p>
+            </div>
+
+            <form id="level3QuestionForm" class="question-form" novalidate>
+              <div class="form-grid">
+                <label class="form-field form-field-wide">
+                  <span>Sentence before Blank 1</span>
+                  <textarea
+                    id="level3Seg0Input"
+                    name="level3Seg0"
+                    rows="2"
+                    placeholder="Example: Azure"
+                    required
+                  ></textarea>
+                </label>
+              </div>
+
+              <fieldset class="blank-fieldset">
+                <legend>Blank 1</legend>
+                <div class="form-grid">
+                  <label class="form-field form-field-wide">
+                    <span>Choices</span>
+                    <textarea
+                      id="level3Choices1Input"
+                      name="level3Choices1"
+                      rows="5"
+                      placeholder="Paste one choice per line&#10;Azure Boards&#10;Azure Pipelines&#10;Azure Repos"
+                      required
+                    ></textarea>
+                  </label>
+                  <label class="form-field">
+                    <span>Correct Answer</span>
+                    <input
+                      id="level3Answer1Input"
+                      name="level3Answer1"
+                      type="text"
+                      placeholder="Type the exact correct choice"
+                      required
+                    />
+                  </label>
+                </div>
+              </fieldset>
+
+              <div class="form-grid">
+                <label class="form-field form-field-wide">
+                  <span>Sentence between Blank 1 and Blank 2</span>
+                  <textarea
+                    id="level3Seg1Input"
+                    name="level3Seg1"
+                    rows="2"
+                    placeholder="Example: provides CI/CD and"
+                  ></textarea>
+                </label>
+              </div>
+
+              <fieldset class="blank-fieldset">
+                <legend>Blank 2</legend>
+                <div class="form-grid">
+                  <label class="form-field form-field-wide">
+                    <span>Choices</span>
+                    <textarea
+                      id="level3Choices2Input"
+                      name="level3Choices2"
+                      rows="5"
+                      placeholder="Paste one choice per line&#10;Azure Monitor&#10;Azure Advisor&#10;Azure Policy"
+                      required
+                    ></textarea>
+                  </label>
+                  <label class="form-field">
+                    <span>Correct Answer</span>
+                    <input
+                      id="level3Answer2Input"
+                      name="level3Answer2"
+                      type="text"
+                      placeholder="Type the exact correct choice"
+                      required
+                    />
+                  </label>
+                </div>
+              </fieldset>
+
+              <div class="form-grid">
+                <label class="form-field form-field-wide">
+                  <span>Sentence after Blank 2 <small>(optional)</small></span>
+                  <textarea
+                    id="level3Seg2Input"
+                    name="level3Seg2"
+                    rows="2"
+                    placeholder="Example: enables application monitoring."
+                  ></textarea>
+                </label>
+              </div>
+
+              <div class="form-actions">
+                <p id="level3FormNotice" class="submit-notice" hidden></p>
+                <button class="shuffle-button" type="submit">Save Dropdown Question</button>
+              </div>
+            </form>
+          </section>
+
+          <section class="form-section" aria-labelledby="yesNoFormTitle">
+            <div class="form-section-header">
+              <h2 id="yesNoFormTitle">Yes or No Question</h2>
+              <p class="section-hint">Add a Level 4 question with only Yes or No as choices.</p>
+            </div>
+
+            <form id="level4QuestionForm" class="question-form" novalidate>
+              <div class="form-grid">
+                <label class="form-field form-field-wide">
+                  <span>Question Prompt</span>
+                  <textarea
+                    id="level4PromptInput"
+                    name="level4Prompt"
+                    rows="4"
+                    placeholder="Example: Does Azure Pipelines support parallel jobs?"
+                    required
+                  ></textarea>
+                </label>
+
+                <label class="form-field">
+                  <span>Correct Answer</span>
+                  <select id="level4AnswerInput" name="level4Answer">
+                    <option value="0">Yes</option>
+                    <option value="1">No</option>
+                  </select>
+                </label>
+              </div>
+
+              <div class="form-actions">
+                <p id="level4FormNotice" class="submit-notice" hidden></p>
+                <button class="shuffle-button" type="submit">Save Yes/No Question</button>
+              </div>
+            </form>
+          </section>
+        </section>
+
+        <section id="savedBankPanel" class="saved-bank-panel is-hidden" aria-label="Saved questions">
+          <div class="saved-bank-header">
+            <h2>Saved Questions</h2>
+            <button id="toggleSavedListButton" class="secondary-button saved-toggle-button" type="button" aria-expanded="false">
+              Show Saved Questions
+            </button>
+          </div>
+          <p class="saved-bank-hint">Delete any saved multiple-choice, drag-and-drop, or dropdown question from the bank.</p>
+          <div id="savedQuestionList" class="saved-question-list is-collapsed"></div>
+        </section>
+
+        <article id="quizPanel" class="exam-card" aria-live="polite">
+          <section class="exam-body">
+            <p class="stage-label">Level 1: Multiple Choice</p>
+            <p id="questionPrompt" class="question-prompt"></p>
+            <ul id="choiceList" class="choice-list"></ul>
+          </section>
+
+          <footer class="answer-panel">
+            <div class="quiz-actions">
+              <button id="nextQuestionButton" class="shuffle-button" type="button">
+                Next Question
+              </button>
+            </div>
+          </footer>
+        </article>
+      </section>
+    </main>
+
+    <script src="script.js"></script>
+  </body>
+</html>
