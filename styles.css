@@ -182,21 +182,21 @@ h1 {
 
 .bank-form-panel {
   margin-bottom: 1.15rem;
-  border: 1px solid var(--card-border);
-  border-radius: 1rem;
-  padding: 1rem;
-  background: rgba(255, 255, 255, 0.9);
-  box-shadow: 0 8px 20px rgba(30, 48, 73, 0.08);
 }
 
 .bank-form-panel.is-hidden {
   display: none;
 }
 
+.form-section {
+  border: 1px solid var(--card-border);
+  border-radius: 1rem;
+  padding: 1.25rem 1.25rem 1rem;
+  background: #f7f9fc;
+}
+
 .form-section + .form-section {
   margin-top: 1.25rem;
-  padding-top: 1.25rem;
-  border-top: 1px solid rgba(66, 84, 106, 0.12);
 }
 
 .form-section-header {
