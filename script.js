@@ -741,6 +741,8 @@ function resetDragBlankIndicators() {
   document.querySelectorAll("#dragBlankLabelRows .blank-pos-indicator")
     .forEach(el => { el.classList.remove("is-active"); el.classList.remove("is-at-limit"); });
 }
+
+function resetChoiceOrder(question) {
   currentChoiceOrder = question.choices.map((_, index) => index);
 }
 

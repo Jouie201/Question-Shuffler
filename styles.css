@@ -1274,6 +1274,7 @@ h1 {
   overflow: hidden;
   display: -webkit-box;
   -webkit-line-clamp: 1;
+  line-clamp: 1;
   -webkit-box-orient: vertical;
 }
 
@@ -1361,9 +1362,7 @@ h1 {
   color: var(--text-main);
 }
 
-.q-prompt-text {
-  /* plain inline segment â€” inherits from .q-prompt-line */
-}
+/* .q-prompt-text -- plain inline segment, inherits from .q-prompt-line */
 
 /* Inline dropdown wrapper (overrides the block version) */
 .q-dropdown-inline {
