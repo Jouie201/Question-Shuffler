@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>AZ-400 · Edit Question</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <main class="app-shell">
+      <section class="panel">
+
+        <div class="toolbar">
+          <p class="exam-title" id="editPageTitle">Edit Question</p>
+          <div class="toolbar-actions">
+            <a href="manage.html" class="secondary-button manage-back-link">&#8592; Back to Saved Questions</a>
+          </div>
+        </div>
+
+        <!-- ── Level 2 Edit Form ────────────────────────── -->
+        <section id="editLevel2Section" class="form-section is-edit-hidden" aria-labelledby="editLevel2Title">
+          <div class="form-section-header">
+            <p class="stage-label stage-label--form">Level 2</p>
+            <h2 id="editLevel2Title">Edit Drag and Drop Question</h2>
+            <p class="section-hint">Update any field below then click Save Changes.</p>
+          </div>
+
+          <form id="editLevel2Form" class="question-form" novalidate>
+            <div class="form-grid">
+              <label class="form-field">
+                <span>Answer Area Layout</span>
+                <select id="editDragLayoutType" name="editDragLayoutType">
+                  <option value="standard">Standard Answer Area</option>
+                  <option value="middle">Middle Answer Area</option>
+                </select>
+              </label>
+
+              <label class="form-field">
+                <span>Blank Arrangement</span>
+                <select id="editDragBlankLayout" name="editDragBlankLayout">
+                  <option value="vertical">Over and Under Each Other</option>
+                  <option value="horizontal">Beside Each Other</option>
+                </select>
+              </label>
+
+              <label class="form-field form-field-wide">
+                <span>Question Prompt</span>
+                <textarea id="editDragPrompt" name="editDragPrompt" rows="4" required></textarea>
+              </label>
+
+              <label class="form-field form-field-wide">
+                <span>Options</span>
+                <textarea
+                  id="editDragOptions"
+                  name="editDragOptions"
+                  rows="5"
+                  placeholder="Paste one draggable option per line"
+                  required
+                ></textarea>
+              </label>
+
+              <section id="editStandardFields" class="drag-form-variant form-field-wide">
+                <div class="form-grid form-grid-single">
+                  <label class="form-field form-field-wide">
+                    <span>Correct Matches</span>
+                    <textarea
+                      id="editDragAnswers"
+                      name="editDragAnswers"
+                      rows="4"
+                      placeholder="Paste one correct option per line in the order the blanks should be checked"
+                      required
+                    ></textarea>
+                  </label>
+                </div>
+              </section>
+
+              <section id="editMiddleFields" class="drag-form-variant form-field-wide is-hidden">
+                <div class="form-grid form-grid-single">
+                  <label class="form-field form-field-wide">
+                    <span>Correct Matches</span>
+                    <textarea
+                      id="editDragMiddleAnswers"
+                      name="editDragMiddleAnswers"
+                      rows="4"
+                      placeholder="Paste one correct option per line in the order the middle blanks should be checked"
+                    ></textarea>
+                  </label>
+                </div>
+              </section>
+
+              <section class="drag-form-variant form-field-wide">
+                <p class="section-hint" style="margin:0 0 0.75rem;">Sentence Beside Blank — Left Side <small>(optional)</small></p>
+                <div class="blank-label-rows" id="editBlankLabelRows">
+                  <div class="blank-label-row">
+                    <div class="blank-label-field">
+                      <span class="blank-label-num">Blank 1</span>
+                      <input id="editLeftLabel1" name="editLeftLabel1" type="text" placeholder="e.g. The pipeline uses" />
+                      <span class="blank-pos-indicator" role="button" tabindex="0" title="Click to toggle this blank on/off" data-blank-index="0"></span>
+                    </div>
+                  </div>
+                  <div class="blank-label-row">
+                    <div class="blank-label-field">
+                      <span class="blank-label-num">Blank 2</span>
+                      <input id="editLeftLabel2" name="editLeftLabel2" type="text" placeholder="e.g. and then deploys via" />
+                      <span class="blank-pos-indicator" role="button" tabindex="0" title="Click to toggle this blank on/off" data-blank-index="1"></span>
+                    </div>
+                  </div>
+                  <div class="blank-label-row">
+                    <div class="blank-label-field">
+                      <span class="blank-label-num">Blank 3</span>
+                      <input id="editLeftLabel3" name="editLeftLabel3" type="text" placeholder="e.g. which stores artifacts in" />
+                      <span class="blank-pos-indicator" role="button" tabindex="0" title="Click to toggle this blank on/off" data-blank-index="2"></span>
+                    </div>
+                  </div>
+                  <div class="blank-label-row">
+                    <div class="blank-label-field">
+                      <span class="blank-label-num">Blank 4</span>
+                      <input id="editLeftLabel4" name="editLeftLabel4" type="text" placeholder="e.g. before notifying" />
+                      <span class="blank-pos-indicator" role="button" tabindex="0" title="Click to toggle this blank on/off" data-blank-index="3"></span>
+                    </div>
+                  </div>
+                  <div class="blank-label-row">
+                    <div class="blank-label-field">
+                      <span class="blank-label-num">Blank 5</span>
+                      <input id="editLeftLabel5" name="editLeftLabel5" type="text" placeholder="e.g. and publishing to" />
+                      <span class="blank-pos-indicator" role="button" tabindex="0" title="Click to toggle this blank on/off" data-blank-index="4"></span>
+                    </div>
+                  </div>
+                </div>
+              </section>
+            </div>
+
+            <div class="form-actions">
+              <p id="editLevel2Notice" class="submit-notice" hidden></p>
+              <a href="manage.html" class="secondary-button">Cancel</a>
+              <button class="shuffle-button" type="submit">Save Changes</button>
+            </div>
+          </form>
+        </section>
+
+        <!-- ── Level 3 Edit Form ────────────────────────── -->
+        <section id="editLevel3Section" class="form-section is-edit-hidden" aria-labelledby="editLevel3Title">
+          <div class="form-section-header">
+            <p class="stage-label stage-label--form">Level 3</p>
+            <h2 id="editLevel3Title">Edit Dropdown Question</h2>
+            <p class="section-hint">Update the sentence segments and blank choices then click Save Changes.</p>
+          </div>
+
+          <form id="editLevel3Form" class="question-form" novalidate>
+            <div class="form-grid">
+              <label class="form-field form-field-wide">
+                <span>Question text before Blank 1</span>
+                <textarea id="editSeg0" name="editSeg0" rows="2" required></textarea>
+              </label>
+            </div>
+
+            <fieldset class="blank-fieldset">
+              <legend>Blank 1</legend>
+              <div class="form-grid">
+                <label class="form-field form-field-wide">
+                  <span>Choices</span>
+                  <textarea
+                    id="editChoices1"
+                    name="editChoices1"
+                    rows="5"
+                    placeholder="Paste one choice per line"
+                    required
+                  ></textarea>
+                </label>
+                <label class="form-field">
+                  <span>Correct Answer</span>
+                  <input id="editAnswer1" name="editAnswer1" type="text" placeholder="Type the exact correct choice" required />
+                </label>
+              </div>
+            </fieldset>
+
+            <div class="form-grid">
+              <label class="form-field form-field-wide">
+                <span>Sentence between Blank 1 and Blank 2</span>
+                <textarea id="editSeg1" name="editSeg1" rows="2" placeholder="e.g. provides CI/CD and"></textarea>
+              </label>
+            </div>
+
+            <fieldset class="blank-fieldset">
+              <legend>Blank 2</legend>
+              <div class="form-grid">
+                <label class="form-field form-field-wide">
+                  <span>Choices</span>
+                  <textarea
+                    id="editChoices2"
+                    name="editChoices2"
+                    rows="5"
+                    placeholder="Paste one choice per line"
+                    required
+                  ></textarea>
+                </label>
+                <label class="form-field">
+                  <span>Correct Answer</span>
+                  <input id="editAnswer2" name="editAnswer2" type="text" placeholder="Type the exact correct choice" required />
+                </label>
+              </div>
+            </fieldset>
+
+            <div class="form-grid">
+              <label class="form-field form-field-wide">
+                <span>Sentence after Blank 2 <small>(optional if using Blank 3, otherwise end of sentence)</small></span>
+                <textarea id="editSeg2" name="editSeg2" rows="2" placeholder="e.g. enables application monitoring."></textarea>
+              </label>
+            </div>
+
+            <fieldset class="blank-fieldset">
+              <legend>Blank 3 <small>(optional — leave Choices empty to remove)</small></legend>
+              <div class="form-grid">
+                <label class="form-field form-field-wide">
+                  <span>Choices</span>
+                  <textarea id="editChoices3" name="editChoices3" rows="5" placeholder="Leave empty to skip Blank 3"></textarea>
+                </label>
+                <label class="form-field">
+                  <span>Correct Answer</span>
+                  <input id="editAnswer3" name="editAnswer3" type="text" placeholder="Type the exact correct choice" />
+                </label>
+              </div>
+            </fieldset>
+
+            <div class="form-grid">
+              <label class="form-field form-field-wide">
+                <span>Sentence after Blank 3 <small>(optional)</small></span>
+                <textarea id="editSeg3" name="editSeg3" rows="2" placeholder="e.g. for compliance."></textarea>
+              </label>
+            </div>
+
+            <div class="form-actions">
+              <p id="editLevel3Notice" class="submit-notice" hidden></p>
+              <a href="manage.html" class="secondary-button">Cancel</a>
+              <button class="shuffle-button" type="submit">Save Changes</button>
+            </div>
+          </form>
+        </section>
+
+        <!-- ── No target fallback ───────────────────────── -->
+        <div id="editNoTarget" class="empty-bank-state is-edit-hidden">
+          No question selected for editing. <a href="manage.html">Go back to Saved Questions.</a>
+        </div>
+
+      </section>
+    </main>
+
+    <script src="edit.js"></script>
+  </body>
+</html>

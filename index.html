@@ -23,6 +23,9 @@
             <button id="savedQuestionsButton" class="secondary-button" type="button" aria-expanded="false">
               AZ-400
             </button>
+            <button id="manageQuestionsButton" class="secondary-button" type="button">
+              Saved Questions
+            </button>
             <button id="shuffleButton" class="shuffle-button" type="button">
               Shuffle Choices
             </button>
@@ -37,6 +40,7 @@
         <section id="bankFormPanel" class="bank-form-panel is-hidden" aria-label="Add question form">
           <section class="form-section" aria-labelledby="multipleChoiceFormTitle">
             <div class="form-section-header">
+              <p class="stage-label stage-label--form">Level 1</p>
               <h2 id="multipleChoiceFormTitle">Multiple Choice Question</h2>
               <p class="section-hint">Add a Level 1 question with one or more correct answers.</p>
             </div>
@@ -80,6 +84,7 @@
 
           <section class="form-section" aria-labelledby="dragDropFormTitle">
             <div class="form-section-header">
+              <p class="stage-label stage-label--form">Level 2</p>
               <h2 id="dragDropFormTitle">Drag and Drop Question</h2>
               <p class="section-hint">Add a Level 2 question with draggable options and answer slots.</p>
             </div>
@@ -118,19 +123,6 @@
                   ></textarea>
                 </label>
 
-                <label class="form-field">
-                  <span>How Many Correct Answers</span>
-                  <input
-                    id="dragCorrectAnswerCountInput"
-                    name="dragCorrectAnswerCount"
-                    type="number"
-                    min="1"
-                    step="1"
-                    placeholder="Example: 2"
-                    required
-                  />
-                </label>
-
                 <section id="standardDragFields" class="drag-form-variant form-field-wide">
                   <div class="form-grid form-grid-single">
                     <label class="form-field form-field-wide">
@@ -142,7 +134,6 @@
                         placeholder="Paste one correct option per line in the order the blanks should be checked"
                         required
                       ></textarea>
-                      <small>The number of lines here must match the correct-answer count.</small>
                     </label>
                   </div>
                 </section>
@@ -157,8 +148,48 @@
                         rows="4"
                         placeholder="Paste one correct option per line in the order the middle blanks should be checked"
                       ></textarea>
-                      <small>The number of lines here must match the correct-answer count.</small>
                     </label>
+                  </div>
+                </section>
+
+                <section class="drag-form-variant form-field-wide">
+                  <p class="section-hint" style="margin:0 0 0.75rem;">Sentence Beside Blank — Left Side <small>(optional)</small></p>
+                  <div class="blank-label-rows" id="dragBlankLabelRows">
+                    <div class="blank-label-row">
+                      <div class="blank-label-field">
+                        <span class="blank-label-num">Blank 1</span>
+                        <input id="dragLeftLabel1Input" name="dragLeftLabel1" type="text" placeholder="e.g. The pipeline uses" />
+                        <span class="blank-pos-indicator" role="button" tabindex="0" title="Click to toggle this blank on/off" data-blank-index="0"></span>
+                      </div>
+                    </div>
+                    <div class="blank-label-row">
+                      <div class="blank-label-field">
+                        <span class="blank-label-num">Blank 2</span>
+                        <input id="dragLeftLabel2Input" name="dragLeftLabel2" type="text" placeholder="e.g. and then deploys via" />
+                        <span class="blank-pos-indicator" role="button" tabindex="0" title="Click to toggle this blank on/off" data-blank-index="1"></span>
+                      </div>
+                    </div>
+                    <div class="blank-label-row">
+                      <div class="blank-label-field">
+                        <span class="blank-label-num">Blank 3</span>
+                        <input id="dragLeftLabel3Input" name="dragLeftLabel3" type="text" placeholder="e.g. which stores artifacts in" />
+                        <span class="blank-pos-indicator" role="button" tabindex="0" title="Click to toggle this blank on/off" data-blank-index="2"></span>
+                      </div>
+                    </div>
+                    <div class="blank-label-row">
+                      <div class="blank-label-field">
+                        <span class="blank-label-num">Blank 4</span>
+                        <input id="dragLeftLabel4Input" name="dragLeftLabel4" type="text" placeholder="e.g. before notifying" />
+                        <span class="blank-pos-indicator" role="button" tabindex="0" title="Click to toggle this blank on/off" data-blank-index="3"></span>
+                      </div>
+                    </div>
+                    <div class="blank-label-row">
+                      <div class="blank-label-field">
+                        <span class="blank-label-num">Blank 5</span>
+                        <input id="dragLeftLabel5Input" name="dragLeftLabel5" type="text" placeholder="e.g. and publishing to" />
+                        <span class="blank-pos-indicator" role="button" tabindex="0" title="Click to toggle this blank on/off" data-blank-index="4"></span>
+                      </div>
+                    </div>
                   </div>
                 </section>
               </div>
@@ -172,14 +203,15 @@
 
           <section class="form-section" aria-labelledby="dropdownFormTitle">
             <div class="form-section-header">
+              <p class="stage-label stage-label--form">Level 3</p>
               <h2 id="dropdownFormTitle">Dropdown Question</h2>
-              <p class="section-hint">Build a sentence with two fill-in-the-blank dropdowns. Type the parts of the sentence around each blank.</p>
+              <p class="section-hint">Build a sentence with up to three fill-in-the-blank dropdowns. Blank 3 is optional.</p>
             </div>
 
             <form id="level3QuestionForm" class="question-form" novalidate>
               <div class="form-grid">
                 <label class="form-field form-field-wide">
-                  <span>Sentence before Blank 1</span>
+                  <span>Question</span>
                   <textarea
                     id="level3Seg0Input"
                     name="level3Seg0"
@@ -256,10 +288,46 @@
 
               <div class="form-grid">
                 <label class="form-field form-field-wide">
-                  <span>Sentence after Blank 2 <small>(optional)</small></span>
+                  <span>Sentence after Blank 2 <small>(optional if using Blank 3, otherwise end of sentence)</small></span>
                   <textarea
                     id="level3Seg2Input"
                     name="level3Seg2"
+                    rows="2"
+                    placeholder="Example: enables application monitoring."
+                  ></textarea>
+                </label>
+              </div>
+
+              <fieldset class="blank-fieldset">
+                <legend>Blank 3 <small>(optional)</small></legend>
+                <div class="form-grid">
+                  <label class="form-field form-field-wide">
+                    <span>Choices</span>
+                    <textarea
+                      id="level3Choices3Input"
+                      name="level3Choices3"
+                      rows="5"
+                      placeholder="Leave empty to skip Blank 3"
+                    ></textarea>
+                  </label>
+                  <label class="form-field">
+                    <span>Correct Answer</span>
+                    <input
+                      id="level3Answer3Input"
+                      name="level3Answer3"
+                      type="text"
+                      placeholder="Type the exact correct choice"
+                    />
+                  </label>
+                </div>
+              </fieldset>
+
+              <div class="form-grid">
+                <label class="form-field form-field-wide">
+                  <span>Sentence after Blank 3 <small>(optional)</small></span>
+                  <textarea
+                    id="level3Seg3Input"
+                    name="level3Seg3"
                     rows="2"
                     placeholder="Example: enables application monitoring."
                   ></textarea>
@@ -275,6 +343,7 @@
 
           <section class="form-section" aria-labelledby="yesNoFormTitle">
             <div class="form-section-header">
+              <p class="stage-label stage-label--form">Level 4</p>
               <h2 id="yesNoFormTitle">Yes or No Question</h2>
               <p class="section-hint">Add a Level 4 question with only Yes or No as choices.</p>
             </div>
@@ -318,6 +387,33 @@
           </div>
           <p class="saved-bank-hint">Delete any saved multiple-choice, drag-and-drop, or dropdown question from the bank.</p>
           <div id="savedQuestionList" class="saved-question-list is-collapsed"></div>
+        </section>
+
+        <section id="levelSelectorPanel" class="level-selector-panel is-hidden" aria-label="Choose exam level">
+          <h2 class="level-selector-title">AZ-400 Exam Practice</h2>
+          <p class="level-selector-hint">Select the level you want to practice, or take all levels in sequence.</p>
+          <div class="level-selector-grid">
+            <button class="level-choice-button" data-mode="level1" type="button">
+              <span class="level-choice-label">Level 1</span>
+              <span class="level-choice-desc">Multiple Choice</span>
+            </button>
+            <button class="level-choice-button" data-mode="level2" type="button">
+              <span class="level-choice-label">Level 2</span>
+              <span class="level-choice-desc">Drag and Drop</span>
+            </button>
+            <button class="level-choice-button" data-mode="level3" type="button">
+              <span class="level-choice-label">Level 3</span>
+              <span class="level-choice-desc">Dropdown</span>
+            </button>
+            <button class="level-choice-button" data-mode="level4" type="button">
+              <span class="level-choice-label">Level 4</span>
+              <span class="level-choice-desc">Yes or No</span>
+            </button>
+            <button class="level-choice-button level-choice-button--combined" data-mode="combined" type="button">
+              <span class="level-choice-label">Combined</span>
+              <span class="level-choice-desc">All Levels in Sequence</span>
+            </button>
+          </div>
         </section>
 
         <article id="quizPanel" class="exam-card" aria-live="polite">

@@ -6,6 +6,7 @@ const LEVEL_ONE_RESULT_STORAGE_KEY = "az400-level-one-result";
 const LEVEL_TWO_RESULT_STORAGE_KEY = "az400-level-two-result";
 const LEVEL_THREE_RESULT_STORAGE_KEY = "az400-level-three-result";
 const RESULT_STORAGE_KEY = "az400-quiz-result";
+const EXAM_MODE_KEY = "az400-exam-mode";
 
 const defaultQuestionBank = [
   {
@@ -117,7 +118,10 @@ function cloneDragDropQuestionBank(questionBank) {
     prompt: buildDragQuestionPrompt(question),
     options: [...question.options],
     targets: [...question.targets],
-    correctMatches: [...question.correctMatches]
+    correctMatches: [...question.correctMatches],
+    blankLeftLabels: Array.isArray(question.blankLeftLabels)
+      ? [...question.blankLeftLabels]
+      : []
   }));
 }
 
@@ -306,6 +310,7 @@ const dragQuestionForm = document.getElementById("dragQuestionForm");
 const savedQuestionList = document.getElementById("savedQuestionList");
 const toggleSavedListButton = document.getElementById("toggleSavedListButton");
 const quizPanel = document.getElementById("quizPanel");
+const levelSelectorPanel = document.getElementById("levelSelectorPanel");
 const questionPrompt = document.getElementById("questionPrompt");
 const choiceList = document.getElementById("choiceList");
 const nextQuestionButton = document.getElementById("nextQuestionButton");
@@ -316,11 +321,15 @@ const dragLayoutTypeInput = document.getElementById("dragLayoutTypeInput");
 const dragBlankLayoutInput = document.getElementById("dragBlankLayoutInput");
 const dragPromptInput = document.getElementById("dragPromptInput");
 const dragChoicesInput = document.getElementById("dragChoicesInput");
-const dragCorrectAnswerCountInput = document.getElementById("dragCorrectAnswerCountInput");
 const dragAnswersInput = document.getElementById("dragAnswersInput");
 const standardDragFields = document.getElementById("standardDragFields");
 const middleDragFields = document.getElementById("middleDragFields");
 const dragMiddleAnswersInput = document.getElementById("dragMiddleAnswersInput");
+const dragLeftLabel1Input = document.getElementById("dragLeftLabel1Input");
+const dragLeftLabel2Input = document.getElementById("dragLeftLabel2Input");
+const dragLeftLabel3Input = document.getElementById("dragLeftLabel3Input");
+const dragLeftLabel4Input = document.getElementById("dragLeftLabel4Input");
+const dragLeftLabel5Input = document.getElementById("dragLeftLabel5Input");
 const level3QuestionForm = document.getElementById("level3QuestionForm");
 const level4QuestionForm = document.getElementById("level4QuestionForm");
 const level4PromptInput = document.getElementById("level4PromptInput");
@@ -329,10 +338,13 @@ const level4FormNotice = document.getElementById("level4FormNotice");
 const level3Seg0Input = document.getElementById("level3Seg0Input");
 const level3Seg1Input = document.getElementById("level3Seg1Input");
 const level3Seg2Input = document.getElementById("level3Seg2Input");
+const level3Seg3Input = document.getElementById("level3Seg3Input");
 const level3Choices1Input = document.getElementById("level3Choices1Input");
 const level3Answer1Input = document.getElementById("level3Answer1Input");
 const level3Choices2Input = document.getElementById("level3Choices2Input");
 const level3Answer2Input = document.getElementById("level3Answer2Input");
+const level3Choices3Input = document.getElementById("level3Choices3Input");
+const level3Answer3Input = document.getElementById("level3Answer3Input");
 const questionFormNotice = document.getElementById("questionFormNotice");
 const dragFormNotice = document.getElementById("dragFormNotice");
 const level3FormNotice = document.getElementById("level3FormNotice");
@@ -409,7 +421,18 @@ function createSavedQuestionItem(question, index, type) {
 
   header.append(typeBadge, label);
   copy.append(header, text);
-  item.append(copy, deleteButton);
+
+  if (type === "drag-drop" || type === "dropdown") {
+    const editButton = document.createElement("button");
+    editButton.className = "edit-button";
+    editButton.type = "button";
+    editButton.dataset.index = String(index);
+    editButton.dataset.type = type;
+    editButton.textContent = "Edit";
+    item.append(copy, editButton, deleteButton);
+  } else {
+    item.append(copy, deleteButton);
+  }
 
   return item;
 }
@@ -436,7 +459,7 @@ function appendSavedQuestionGroup(container, title, questions, type) {
 }
 
 function renderSavedQuestions() {
-  const totalQuestionCount = questionBank.length + dragDropQuestionBank.length + level3QuestionBank.length;
+  const totalQuestionCount = questionBank.length + dragDropQuestionBank.length + level3QuestionBank.length + level4QuestionBank.length;
 
   savedQuestionList.innerHTML = "";
   savedQuestionList.classList.toggle("is-scrollable", totalQuestionCount > 5);
@@ -574,6 +597,7 @@ function shuffleChoices() {
 function showQuizView() {
   bankFormPanel.classList.add("is-hidden");
   savedBankPanel.classList.add("is-hidden");
+  levelSelectorPanel.classList.add("is-hidden");
   quizPanel.classList.remove("is-hidden");
   addQuestionButton.setAttribute("aria-expanded", "false");
   savedQuestionsButton.setAttribute("aria-expanded", "false");
@@ -583,6 +607,7 @@ function showBankManagerView() {
   bankFormPanel.classList.remove("is-hidden");
   savedBankPanel.classList.remove("is-hidden");
   savedQuestionList.classList.add("is-collapsed");
+  levelSelectorPanel.classList.add("is-hidden");
   quizPanel.classList.add("is-hidden");
   addQuestionButton.setAttribute("aria-expanded", "true");
   savedQuestionsButton.setAttribute("aria-expanded", "false");
@@ -609,6 +634,34 @@ function toggleBankForm() {
 }
 
 function toggleSavedQuestions() {
+  bankFormPanel.classList.add("is-hidden");
+  savedBankPanel.classList.add("is-hidden");
+  quizPanel.classList.add("is-hidden");
+  levelSelectorPanel.classList.remove("is-hidden");
+  savedQuestionsButton.setAttribute("aria-expanded", "true");
+  addQuestionButton.setAttribute("aria-expanded", "false");
+}
+
+function startExam(mode) {
+  window.sessionStorage.setItem(EXAM_MODE_KEY, mode);
+  window.sessionStorage.removeItem(LEVEL_ONE_RESULT_STORAGE_KEY);
+  window.sessionStorage.removeItem(LEVEL_TWO_RESULT_STORAGE_KEY);
+  window.sessionStorage.removeItem(LEVEL_THREE_RESULT_STORAGE_KEY);
+  window.sessionStorage.removeItem(RESULT_STORAGE_KEY);
+
+  if (mode === "level2") {
+    window.location.href = "level2.html";
+    return;
+  }
+  if (mode === "level3") {
+    window.location.href = "level3.html";
+    return;
+  }
+  if (mode === "level4") {
+    window.location.href = "level4.html";
+    return;
+  }
+  // level1 or combined: start from Level 1 quiz
   showQuizView();
 }
 
@@ -617,12 +670,77 @@ function syncDragFormVariant() {
 
   standardDragFields.classList.toggle("is-hidden", isMiddleLayout);
   middleDragFields.classList.toggle("is-hidden", !isMiddleLayout);
-  dragCorrectAnswerCountInput.required = true;
   dragAnswersInput.required = !isMiddleLayout;
   dragMiddleAnswersInput.required = isMiddleLayout;
 }
+// ── Blank indicator click toggle (Add form) ──────────────
+function getDragCorrectCount() {
+  const isMiddle = dragLayoutTypeInput.value === "middle";
+  return (isMiddle ? dragMiddleAnswersInput : dragAnswersInput)
+    .value.split("\n").filter(l => l.trim()).length;
+}
 
-function resetChoiceOrder(question) {
+function updateDragIndicatorLimits() {
+  const limit = getDragCorrectCount();
+  const indicators = document.querySelectorAll("#dragBlankLabelRows .blank-pos-indicator");
+  let activeCount = 0;
+  // First pass: count actives
+  indicators.forEach(el => { if (el.classList.contains("is-active")) activeCount++; });
+  // If actives exceed new limit, deactivate from the end
+  if (activeCount > limit) {
+    let toRemove = activeCount - limit;
+    for (let i = indicators.length - 1; i >= 0 && toRemove > 0; i--) {
+      if (indicators[i].classList.contains("is-active")) {
+        indicators[i].classList.remove("is-active");
+        toRemove--;
+      }
+    }
+    activeCount = limit;
+  }
+  // Second pass: mark at-limit on inactive indicators when cap is reached
+  indicators.forEach(el => {
+    const isActive = el.classList.contains("is-active");
+    el.classList.toggle("is-at-limit", !isActive && activeCount >= limit && limit > 0);
+  });
+}
+
+dragAnswersInput.addEventListener("input", updateDragIndicatorLimits);
+dragMiddleAnswersInput.addEventListener("input", updateDragIndicatorLimits);
+dragLayoutTypeInput.addEventListener("change", updateDragIndicatorLimits);
+
+document.getElementById("dragBlankLabelRows").addEventListener("click", function(e) {
+  const indicator = e.target.closest(".blank-pos-indicator");
+  if (!indicator) return;
+  const isActive = indicator.classList.contains("is-active");
+  if (!isActive) {
+    // Trying to activate — check limit
+    const limit = getDragCorrectCount();
+    const currentActive = document.querySelectorAll("#dragBlankLabelRows .blank-pos-indicator.is-active").length;
+    if (limit === 0 || currentActive >= limit) return; // blocked
+  }
+  indicator.classList.toggle("is-active");
+  updateDragIndicatorLimits();
+});
+document.getElementById("dragBlankLabelRows").addEventListener("keydown", function(e) {
+  if (e.key === "Enter" || e.key === " ") {
+    const indicator = e.target.closest(".blank-pos-indicator");
+    if (!indicator) return;
+    e.preventDefault();
+    const isActive = indicator.classList.contains("is-active");
+    if (!isActive) {
+      const limit = getDragCorrectCount();
+      const currentActive = document.querySelectorAll("#dragBlankLabelRows .blank-pos-indicator.is-active").length;
+      if (limit === 0 || currentActive >= limit) return;
+    }
+    indicator.classList.toggle("is-active");
+    updateDragIndicatorLimits();
+  }
+});
+
+function resetDragBlankIndicators() {
+  document.querySelectorAll("#dragBlankLabelRows .blank-pos-indicator")
+    .forEach(el => { el.classList.remove("is-active"); el.classList.remove("is-at-limit"); });
+}
   currentChoiceOrder = question.choices.map((_, index) => index);
 }
 
@@ -758,13 +876,20 @@ function handleAddDragQuestion(event) {
   const blankLayout = normalizeBlankLayout(dragBlankLayoutInput.value);
   const prompt = dragPromptInput.value.trim();
   const parsedOptions = parseChoices(dragChoicesInput.value);
-  const correctAnswerCount = Number.parseInt(
-    dragCorrectAnswerCountInput.value,
-    10
-  );
   const parsedCorrectMatches = parseChoices(
     layoutType === "middle" ? dragMiddleAnswersInput.value : dragAnswersInput.value
   );
+  const correctAnswerCount = parsedCorrectMatches.length;
+  const rawLeftLabels = [
+    dragLeftLabel1Input.value.trim(),
+    dragLeftLabel2Input.value.trim(),
+    dragLeftLabel3Input.value.trim(),
+    dragLeftLabel4Input.value.trim(),
+    dragLeftLabel5Input.value.trim()
+  ];
+  const blankActiveFlags = Array.from(
+    document.querySelectorAll("#dragBlankLabelRows .blank-pos-indicator")
+  ).map(el => el.classList.contains("is-active"));
 
   if (!prompt) {
     showFormNotice(dragFormNotice, "Enter a question prompt before saving.");
@@ -778,24 +903,8 @@ function handleAddDragQuestion(event) {
     return;
   }
 
-  if (!Number.isInteger(correctAnswerCount) || correctAnswerCount < 1) {
-    showFormNotice(dragFormNotice, "Enter how many correct answers the question should have.");
-    dragCorrectAnswerCountInput.focus();
-    return;
-  }
-
   if (parsedCorrectMatches.length === 0) {
     showFormNotice(dragFormNotice, "Add at least one correct match before saving.");
-    if (layoutType === "middle") {
-      dragMiddleAnswersInput.focus();
-    } else {
-      dragAnswersInput.focus();
-    }
-    return;
-  }
-
-  if (parsedCorrectMatches.length !== correctAnswerCount) {
-    showFormNotice(dragFormNotice, `The number of correct matches (${parsedCorrectMatches.length}) must equal the correct-answer count (${correctAnswerCount}).`);
     if (layoutType === "middle") {
       dragMiddleAnswersInput.focus();
     } else {
@@ -822,7 +931,9 @@ function handleAddDragQuestion(event) {
     prompt,
     options: parsedOptions,
     targets: parsedTargets,
-    correctMatches: matchedCorrectMatches
+    correctMatches: matchedCorrectMatches,
+    blankLeftLabels: rawLeftLabels,
+    blankActiveFlags: blankActiveFlags
   });
 
   persistDragDropQuestionBank();
@@ -835,6 +946,7 @@ function handleAddDragQuestion(event) {
   dragLayoutTypeInput.value = "standard";
   dragBlankLayoutInput.value = "vertical";
   syncDragFormVariant();
+  resetDragBlankIndicators();
   dragPromptInput.focus();
 }
 
@@ -870,9 +982,10 @@ function handleAddLevel3Question(event) {
   const seg0 = level3Seg0Input.value.trim();
   const seg1 = level3Seg1Input.value.trim();
   const seg2 = level3Seg2Input.value.trim();
+  const seg3 = level3Seg3Input.value.trim();
 
   if (!seg0) {
-    showFormNotice(level3FormNotice, "Enter the sentence text that appears before Blank 1.");
+    showFormNotice(level3FormNotice, "Enter the question text before Blank 1.");
     level3Seg0Input.focus();
     return;
   }
@@ -927,14 +1040,57 @@ function handleAddLevel3Question(event) {
     return;
   }
 
-  const prompt = seg0 + " [blank] " + (seg1 ? seg1 + " " : "") + "[blank]" + (seg2 ? " " + seg2 : "");
+  // Blank 3 is optional — only validate if choices are provided
+  const choices3Raw = level3Choices3Input.value.trim();
+  const choices3 = parseChoices(level3Choices3Input.value);
+  const answer3Text = level3Answer3Input.value.trim();
+  let correct3Index = -1;
+  const hasBlank3 = choices3Raw.length > 0;
+
+  if (hasBlank3) {
+    if (choices3.length < 2) {
+      showFormNotice(level3FormNotice, "Add at least two choices for Blank 3, or leave it empty to skip.");
+      level3Choices3Input.focus();
+      return;
+    }
+
+    if (!answer3Text) {
+      showFormNotice(level3FormNotice, "Enter the correct answer text for Blank 3.");
+      level3Answer3Input.focus();
+      return;
+    }
+
+    correct3Index = choices3.findIndex(
+      (c) => c.trim().toLowerCase() === answer3Text.toLowerCase()
+    );
+
+    if (correct3Index === -1) {
+      showFormNotice(level3FormNotice, `"${answer3Text}" does not match any Blank 3 choice. Copy it exactly from the list above.`);
+      level3Answer3Input.focus();
+      return;
+    }
+  }
+
+  // Build prompt string
+  let prompt = seg0 + " [blank] " + (seg1 ? seg1 + " " : "") + "[blank]";
+  if (hasBlank3) {
+    prompt += (seg2 ? " " + seg2 : "") + " [blank]" + (seg3 ? " " + seg3 : "");
+  } else {
+    prompt += (seg2 ? " " + seg2 : "");
+  }
+
+  const blanks = [
+    { choices: choices1, correctIndex: correct1Index },
+    { choices: choices2, correctIndex: correct2Index }
+  ];
+  if (hasBlank3) {
+    blanks.push({ choices: choices3, correctIndex: correct3Index });
+  }
 
   level3QuestionBank.push({
     prompt,
-    blanks: [
-      { choices: choices1, correctIndex: correct1Index },
-      { choices: choices2, correctIndex: correct2Index }
-    ]
+    blanks,
+    segments: { seg0, seg1, seg2, seg3 }
   });
 
   persistLevel3QuestionBank();
@@ -1024,6 +1180,16 @@ function deleteQuestion(type, index) {
 }
 
 function handleSavedQuestionClick(event) {
+  const editButton = event.target.closest(".edit-button");
+  if (editButton) {
+    window.sessionStorage.setItem(
+      "az400-edit-target",
+      JSON.stringify({ type: editButton.dataset.type, index: Number(editButton.dataset.index) })
+    );
+    window.location.href = "edit.html";
+    return;
+  }
+
   const deleteButton = event.target.closest(".delete-button");
 
   if (!deleteButton) {
@@ -1087,49 +1253,30 @@ function checkAnswer() {
 
 function goToNextQuestion() {
   if (!currentQuestion) {
-    if (dragDropQuestionBank.length > 0) {
-      window.sessionStorage.setItem(
-        LEVEL_ONE_RESULT_STORAGE_KEY,
-        JSON.stringify({
-          correctCount: 0,
-          totalQuestions: 0
-        })
-      );
-      window.location.href = "level2.html";
-      return;
+    const examMode = window.sessionStorage.getItem(EXAM_MODE_KEY) || "combined";
+    const emptyResult = JSON.stringify({ correctCount: 0, totalQuestions: 0 });
+
+    if (examMode === "combined") {
+      if (dragDropQuestionBank.length > 0) {
+        window.sessionStorage.setItem(LEVEL_ONE_RESULT_STORAGE_KEY, emptyResult);
+        window.location.href = "level2.html";
+        return;
+      }
+
+      if (level3QuestionBank.length > 0) {
+        window.sessionStorage.setItem(LEVEL_TWO_RESULT_STORAGE_KEY, emptyResult);
+        window.location.href = "level3.html";
+        return;
+      }
+
+      if (level4QuestionBank.length > 0) {
+        window.sessionStorage.setItem(LEVEL_THREE_RESULT_STORAGE_KEY, emptyResult);
+        window.location.href = "level4.html";
+        return;
+      }
     }
 
-    if (level3QuestionBank.length > 0) {
-      window.sessionStorage.setItem(
-        LEVEL_TWO_RESULT_STORAGE_KEY,
-        JSON.stringify({
-          correctCount: 0,
-          totalQuestions: 0
-        })
-      );
-      window.location.href = "level3.html";
-      return;
-    }
-
-    if (level4QuestionBank.length > 0) {
-      window.sessionStorage.setItem(
-        LEVEL_THREE_RESULT_STORAGE_KEY,
-        JSON.stringify({
-          correctCount: 0,
-          totalQuestions: 0
-        })
-      );
-      window.location.href = "level4.html";
-      return;
-    }
-
-    window.sessionStorage.setItem(
-      RESULT_STORAGE_KEY,
-      JSON.stringify({
-        correctCount: 0,
-        totalQuestions: 0
-      })
-    );
+    window.sessionStorage.setItem(RESULT_STORAGE_KEY, emptyResult);
     window.location.href = "results.html";
     return;
   }
@@ -1151,6 +1298,14 @@ function goToNextQuestion() {
       correctCount,
       totalQuestions: questionBank.length
     };
+
+    const examMode = window.sessionStorage.getItem(EXAM_MODE_KEY) || "combined";
+
+    if (examMode !== "combined") {
+      window.sessionStorage.setItem(RESULT_STORAGE_KEY, JSON.stringify(levelOneResult));
+      window.location.href = "results.html";
+      return;
+    }
 
     if (dragDropQuestionBank.length > 0) {
       window.sessionStorage.setItem(
@@ -1203,8 +1358,18 @@ level4QuestionForm.addEventListener("submit", handleAddLevel4Question);
 dragLayoutTypeInput.addEventListener("change", syncDragFormVariant);
 toggleSavedListButton.addEventListener("click", toggleSavedQuestionList);
 savedQuestionList.addEventListener("click", handleSavedQuestionClick);
+const manageQuestionsButton = document.getElementById("manageQuestionsButton");
+
 choiceList.addEventListener("change", handleChoiceSelection);
 nextQuestionButton.addEventListener("click", goToNextQuestion);
+levelSelectorPanel.addEventListener("click", function (event) {
+  const btn = event.target.closest(".level-choice-button");
+  if (!btn) return;
+  startExam(btn.dataset.mode);
+});
+manageQuestionsButton.addEventListener("click", function () {
+  window.location.href = "manage.html";
+});
 
 window.sessionStorage.removeItem(LEVEL_ONE_RESULT_STORAGE_KEY);
 syncDragFormVariant();

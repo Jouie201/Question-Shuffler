@@ -445,6 +445,195 @@ h1 {
   transform: scale(0.99);
 }
 
+.edit-button {
+  flex: 0 0 auto;
+  border: 1px solid #b8cef7;
+  border-radius: 999px;
+  padding: 0.7rem 0.95rem;
+  font: inherit;
+  font-weight: 700;
+  color: var(--accent-dark);
+  background: #eef4ff;
+  cursor: pointer;
+  transition: background-color 160ms ease, border-color 160ms ease, transform 160ms ease;
+}
+
+.edit-button:hover {
+  background: #ddeaff;
+  border-color: #8fb0f7;
+}
+
+.edit-button:active {
+  transform: scale(0.99);
+}
+
+.is-edit-hidden {
+  display: none;
+}
+
+.manage-back-link {
+  display: inline-flex;
+  align-items: center;
+  text-decoration: none;
+}
+
+/* ── Blank left-label rows (Level 2 form) ────────────────── */
+.blank-label-rows {
+  display: flex;
+  flex-direction: column;
+  gap: 0.55rem;
+}
+
+.blank-label-row {
+  display: flex;
+  align-items: center;
+}
+
+.blank-label-field {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  flex: 1;
+  min-width: 0;
+}
+
+/* Fixed-width "Blank N" badge */
+.blank-label-num {
+  flex: 0 0 4.2rem;
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: var(--accent-dark);
+  white-space: nowrap;
+}
+
+.blank-label-field > input {
+  flex: 1;
+  min-width: 0;
+  border: 1.5px solid var(--card-border);
+  border-radius: 0.6rem;
+  padding: 0.55rem 0.75rem;
+  font: inherit;
+  font-size: 0.92rem;
+  color: var(--text-main);
+  background: white;
+  transition: border-color 160ms ease;
+}
+
+.blank-label-field > input:focus {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(47, 111, 237, 0.12);
+}
+
+/* Visual blank-slot indicator in the form — shows where the drop box appears */
+.blank-pos-indicator {
+  flex: 0 0 auto;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.3rem 0.65rem;
+  border: 2px dashed #d8e4f5;
+  border-radius: 0.5rem;
+  background: #f4f6fb;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  color: #c0cfe8;
+  white-space: nowrap;
+  user-select: none;
+  cursor: pointer;
+  transition: border-color 160ms ease, background 160ms ease, color 160ms ease;
+}
+
+.blank-pos-indicator:hover {
+  border-color: #bfd0f7;
+  background: #eef4ff;
+  color: #8aa5d8;
+}
+
+.blank-pos-indicator::before {
+  content: "[ blank ]";
+}
+
+.blank-pos-indicator.is-active {
+  border-color: #7eadff;
+  background: #e8f0ff;
+  color: var(--accent-dark);
+}
+
+.blank-pos-indicator.is-active:hover {
+  border-color: #5a8ff7;
+  background: #dce8ff;
+}
+
+.blank-pos-indicator.is-at-limit {
+  cursor: not-allowed;
+  opacity: 0.45;
+}
+.blank-pos-indicator.is-at-limit:hover {
+  border-color: #d8e4f5;
+  background: #f4f6fb;
+  color: #c0cfe8;
+}
+
+
+/* ── Manage page: level filter tabs ─────────────────────── */
+.manage-level-filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45rem;
+  margin-bottom: 0.85rem;
+}
+
+.manage-filter-btn {
+  flex: 0 0 auto;
+  border: 1px solid var(--card-border);
+  border-radius: 999px;
+  padding: 0.4rem 1rem;
+  font-family: inherit;
+  font-size: 0.84rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  background: white;
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s, color 0.15s;
+}
+
+.manage-filter-btn:hover {
+  border-color: #8fb0f7;
+  color: var(--accent-dark);
+  background: #eef4ff;
+}
+
+.manage-filter-btn.is-active {
+  border-color: var(--accent);
+  color: white;
+  background: var(--accent);
+}
+
+/* ── Manage page: scrollable question list ───────────────── */
+.manage-question-list {
+  max-height: 31.5rem;
+  overflow-y: auto;
+  padding-right: 0.3rem;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(47, 111, 237, 0.35) rgba(29, 47, 70, 0.06);
+}
+
+.manage-question-list::-webkit-scrollbar {
+  width: 0.65rem;
+}
+
+.manage-question-list::-webkit-scrollbar-thumb {
+  border-radius: 999px;
+  background: rgba(47, 111, 237, 0.35);
+}
+
+.manage-question-list::-webkit-scrollbar-track {
+  background: rgba(29, 47, 70, 0.06);
+  border-radius: 999px;
+}
+
 .empty-bank-state {
   border: 1px dashed var(--card-border);
   border-radius: 0.85rem;
@@ -466,6 +655,84 @@ h1 {
   display: none;
 }
 
+/* ── Level Selector Panel ─────────────────────────────── */
+.level-selector-panel {
+  padding: 2rem 1.75rem;
+  border: 1px solid var(--card-border);
+  border-radius: 1rem;
+  background: var(--card-fill);
+  box-shadow: 0 10px 28px var(--card-shadow);
+  animation: rise-in 260ms ease both;
+}
+
+.level-selector-panel.is-hidden {
+  display: none;
+}
+
+.level-selector-title {
+  margin: 0 0 0.4rem;
+  font-size: 1.45rem;
+  font-weight: 700;
+  color: var(--text-main);
+}
+
+.level-selector-hint {
+  margin: 0 0 1.5rem;
+  color: var(--text-muted);
+  font-size: 0.95rem;
+}
+
+.level-selector-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0.75rem;
+}
+
+.level-choice-button {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 1.4rem 0.75rem;
+  border: 2px solid var(--card-border);
+  border-radius: 0.875rem;
+  background: var(--card-fill);
+  cursor: pointer;
+  font-family: inherit;
+  text-align: center;
+  transition: border-color 160ms ease, background-color 160ms ease, transform 160ms ease, box-shadow 160ms ease;
+}
+
+.level-choice-button:hover {
+  border-color: var(--accent);
+  background: #eef4ff;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(47, 111, 237, 0.18);
+}
+
+.level-choice-button:active {
+  transform: scale(0.98);
+}
+
+.level-choice-label {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--accent);
+}
+
+.level-choice-desc {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+}
+
+.level-choice-button--combined {
+  grid-column: 1 / -1;
+  flex-direction: row;
+  justify-content: center;
+  gap: 0.6rem;
+  padding: 1.1rem 0.75rem;
+}
+
 .exam-body {
   padding: 1rem 1.15rem 1.3rem;
 }
@@ -480,8 +747,16 @@ h1 {
   font-weight: 700;
   letter-spacing: 0.08em;
   text-transform: uppercase;
-  color: var(--accent-dark);
-  background: #eaf1ff;
+  color: #ffffff;
+  background: #132a77;
+}
+
+.stage-label--form {
+  font-size: 1.0rem;
+  padding: 0.65rem 1.5rem;
+  margin: 0 0 0.5rem;
+  background: #284d99;
+  color: #ffffff;
 }
 
 .question-prompt {
@@ -655,8 +930,8 @@ h1 {
 
 .drag-target-row {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(14rem, 0.95fr);
-  gap: 0.75rem;
+  grid-template-columns: minmax(0, 1fr) minmax(11rem, 16rem);
+  gap: 1rem;
   align-items: center;
 }
 
@@ -687,6 +962,8 @@ h1 {
   margin: 0;
   font-weight: 600;
   line-height: 1.4;
+  word-break: break-word;
+  overflow-wrap: break-word;
 }
 
 .drag-target-row-middle .drag-target-label {
@@ -871,6 +1148,10 @@ h1 {
   .toolbar-actions {
     flex-direction: column;
     align-items: stretch;
+  }
+
+  .level-selector-grid {
+    grid-template-columns: repeat(2, 1fr);
   }
 
   .saved-bank-header,

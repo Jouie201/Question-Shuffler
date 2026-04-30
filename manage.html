@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>AZ-400 · Saved Questions</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <main class="app-shell">
+      <section class="panel">
+        <div class="toolbar">
+          <p class="exam-title">Saved Questions</p>
+          <div class="toolbar-actions">
+            <a href="index.html" class="secondary-button manage-back-link">&#8592; Back to Home</a>
+          </div>
+        </div>
+
+        <p class="saved-bank-hint">
+          Edit or delete saved Level 2 and Level 3 questions. Level 1 and Level 4 questions can only be deleted.
+        </p>
+
+        <div class="manage-level-filters" role="group" aria-label="Filter by level">
+          <button class="manage-filter-btn is-active" type="button" data-filter="all">All</button>
+          <button class="manage-filter-btn" type="button" data-filter="level1">Level 1</button>
+          <button class="manage-filter-btn" type="button" data-filter="level2">Level 2</button>
+          <button class="manage-filter-btn" type="button" data-filter="level3">Level 3</button>
+          <button class="manage-filter-btn" type="button" data-filter="level4">Level 4</button>
+        </div>
+
+        <div id="manageList" class="saved-question-list manage-question-list" aria-live="polite"></div>
+      </section>
+    </main>
+
+    <script src="manage.js"></script>
+  </body>
+</html>

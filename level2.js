@@ -57,7 +57,13 @@ function cloneDragDropQuestionBank(questionBank) {
     prompt: buildDragQuestionPrompt(question),
     options: [...question.options],
     targets: [...question.targets],
-    correctMatches: [...question.correctMatches]
+    correctMatches: [...question.correctMatches],
+    blankLeftLabels: Array.isArray(question.blankLeftLabels)
+      ? [...question.blankLeftLabels]
+      : [],
+    blankActiveFlags: Array.isArray(question.blankActiveFlags)
+      ? [...question.blankActiveFlags]
+      : []
   }));
 }
 
@@ -282,7 +288,15 @@ function renderQuestion() {
 
     const label = document.createElement("p");
     label.className = "drag-target-label";
-    label.textContent = target;
+
+    const leftLabelText = currentQuestion.blankLeftLabels &&
+      currentQuestion.blankLeftLabels[index];
+    const isBlankActive = !Array.isArray(currentQuestion.blankActiveFlags) ||
+      currentQuestion.blankActiveFlags.length === 0 ||
+      currentQuestion.blankActiveFlags[index] === true;
+
+    // Use the saved left sentence as the label only if this blank is active
+    label.textContent = (isBlankActive && leftLabelText) ? leftLabelText : target;
 
     const slot = document.createElement("button");
     slot.className = "drag-target-slot";
@@ -533,7 +547,7 @@ function finalizeQuiz() {
 
   let hasLevel3 = false;
   try {
-    const stored = window.sessionStorage.getItem("az400-level3-question-bank");
+    const stored = window.localStorage.getItem("az400-level3-question-bank");
     if (stored !== null) {
       const parsed = JSON.parse(stored);
       hasLevel3 = Array.isArray(parsed) && parsed.length > 0;
@@ -542,16 +556,9 @@ function finalizeQuiz() {
     hasLevel3 = false;
   }
 
-  if (hasLevel3) {
-    window.sessionStorage.setItem("az400-level-two-result", JSON.stringify(combined));
-    window.sessionStorage.removeItem(LEVEL_ONE_RESULT_STORAGE_KEY);
-    window.location.href = "level3.html";
-    return;
-  }
-
   let hasLevel4 = false;
   try {
-    const stored4 = window.sessionStorage.getItem("az400-level4-question-bank");
+    const stored4 = window.localStorage.getItem("az400-level4-question-bank");
     if (stored4 !== null) {
       const parsed4 = JSON.parse(stored4);
       hasLevel4 = Array.isArray(parsed4) && parsed4.length > 0;
@@ -560,11 +567,22 @@ function finalizeQuiz() {
     hasLevel4 = false;
   }
 
-  if (hasLevel4) {
-    window.sessionStorage.setItem("az400-level-three-result", JSON.stringify(combined));
-    window.sessionStorage.removeItem(LEVEL_ONE_RESULT_STORAGE_KEY);
-    window.location.href = "level4.html";
-    return;
+  const examMode = window.sessionStorage.getItem("az400-exam-mode") || "combined";
+
+  if (examMode === "combined") {
+    if (hasLevel3) {
+      window.sessionStorage.setItem("az400-level-two-result", JSON.stringify(combined));
+      window.sessionStorage.removeItem(LEVEL_ONE_RESULT_STORAGE_KEY);
+      window.location.href = "level3.html";
+      return;
+    }
+
+    if (hasLevel4) {
+      window.sessionStorage.setItem("az400-level-three-result", JSON.stringify(combined));
+      window.sessionStorage.removeItem(LEVEL_ONE_RESULT_STORAGE_KEY);
+      window.location.href = "level4.html";
+      return;
+    }
   }
 
   window.sessionStorage.setItem(RESULT_STORAGE_KEY, JSON.stringify(combined));

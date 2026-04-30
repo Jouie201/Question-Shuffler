@@ -53,7 +53,8 @@ var answers = questionBank.map(function(q) {
 });
 
 var openDropdown = null; // bi (number) or null — only one question shown at a time
-var isSubmitted = false; // true after user submits the last question
+var isChecked = false;   // true after the current question has been checked
+var isSubmitted = false; // true after the last question is checked (finalize on next click)
 
 // DOM refs
 var questionCountEl = document.getElementById("questionCount");
@@ -76,6 +77,10 @@ function updateButtonState() {
   var isLast = currentQI === questionBank.length - 1;
   if (isSubmitted) {
     nextButton.textContent = "See Results";
+    nextButton.disabled = false;
+  } else if (isChecked) {
+    // Feedback is shown — let them advance
+    nextButton.textContent = isLast ? "See Results" : "Next Question";
     nextButton.disabled = false;
   } else if (isLast) {
     nextButton.textContent = "Submit";
@@ -137,8 +142,8 @@ function renderCurrentQuestion() {
       var selected = answers[qi][si]; // null or choice index
       var isOpen = openDropdown === si;
       var isSelected = selected !== null;
-      var isCorrectBlank = isSubmitted && isSelected && selected === blank.correctIndex;
-      var isIncorrectBlank = isSubmitted && isSelected && selected !== blank.correctIndex;
+      var isCorrectBlank = isChecked && isSelected && selected === blank.correctIndex;
+      var isIncorrectBlank = isChecked && isSelected && selected !== blank.correctIndex;
 
       var wrapper = document.createElement("div");
       var wrapperClasses = ["q-dropdown", "q-dropdown-inline"];
@@ -153,7 +158,7 @@ function renderCurrentQuestion() {
       var trigger = document.createElement("button");
       trigger.type = "button";
       trigger.className = "q-dropdown-trigger";
-      trigger.disabled = isSubmitted;
+      trigger.disabled = isChecked;
       trigger.dataset.bi = String(si);
 
       var triggerVal = document.createElement("span");
@@ -183,9 +188,9 @@ function renderCurrentQuestion() {
         var option = document.createElement("li");
         var optClasses = ["q-dropdown-option"];
         if (isChoiceSelected) optClasses.push("is-selected");
-        if (isSubmitted && isCorrectChoice) optClasses.push("is-correct");
-        if (isSubmitted && isChoiceSelected && !isCorrectChoice) optClasses.push("is-incorrect");
-        if (isSubmitted) optClasses.push("is-locked");
+        if (isChecked && isCorrectChoice) optClasses.push("is-correct");
+        if (isChecked && isChoiceSelected && !isCorrectChoice) optClasses.push("is-incorrect");
+        if (isChecked) optClasses.push("is-locked");
         option.className = optClasses.join(" ");
         option.dataset.bi = String(si);
         option.dataset.ci = String(ci);
@@ -278,7 +283,9 @@ function finalizeQuiz() {
     hasLevel4 = false;
   }
 
-  if (hasLevel4) {
+  var examMode = window.sessionStorage.getItem("az400-exam-mode") || "combined";
+
+  if (examMode === "combined" && hasLevel4) {
     window.sessionStorage.setItem("az400-level-three-result", JSON.stringify(combined));
     window.sessionStorage.removeItem(LEVEL_TWO_RESULT_STORAGE_KEY);
     window.location.href = "level4.html";
@@ -296,23 +303,29 @@ function handleNext() {
     return;
   }
 
-  if (!isCurrentAnswered()) return;
-
   var isLast = currentQI === questionBank.length - 1;
 
-  if (isLast) {
-    // Lock and show feedback on the last question
-    isSubmitted = true;
-    quizStatus.textContent = "Review your answer, then click See Results";
-    renderCurrentQuestion();
+  // Second click after feedback: advance or finalize
+  if (isChecked) {
+    if (isLast) {
+      isSubmitted = true;
+      finalizeQuiz();
+    } else {
+      currentQI++;
+      isChecked = false;
+      openDropdown = null;
+      renderCurrentQuestion();
+      quizStatus.textContent = "Select an answer for each blank";
+    }
     return;
   }
 
-  // Advance to next question
-  currentQI++;
-  openDropdown = null;
+  // First click: check the answer and show feedback
+  if (!isCurrentAnswered()) return;
+
+  isChecked = true;
+  quizStatus.textContent = isCurrentCorrect() ? "Correct!" : "Incorrect";
   renderCurrentQuestion();
-  quizStatus.textContent = "Select an answer for each blank";
 }
 
 // ── Init ───────────────────────────────────────────────────
