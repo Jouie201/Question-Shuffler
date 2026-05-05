@@ -1,7 +1,9 @@
 "use strict";
 
+var STORAGE_KEY          = "az400-question-bank";
 var DRAG_DROP_STORAGE_KEY = "az400-drag-drop-question-bank";
-var LEVEL3_STORAGE_KEY = "az400-level3-question-bank";
+var LEVEL3_STORAGE_KEY   = "az400-level3-question-bank";
+var LEVEL4_STORAGE_KEY   = "az400-level4-question-bank";
 
 // ── Helpers ───────────────────────────────────────────────
 
@@ -63,10 +65,19 @@ try {
 
 // ── DOM refs ──────────────────────────────────────────────
 
+var editLevel1Section  = document.getElementById("editLevel1Section");
 var editLevel2Section  = document.getElementById("editLevel2Section");
 var editLevel3Section  = document.getElementById("editLevel3Section");
+var editLevel4Section  = document.getElementById("editLevel4Section");
 var editNoTarget       = document.getElementById("editNoTarget");
 var editPageTitle      = document.getElementById("editPageTitle");
+
+// Level 1
+var editLevel1Form  = document.getElementById("editLevel1Form");
+var editL1Prompt    = document.getElementById("editL1Prompt");
+var editL1Choices   = document.getElementById("editL1Choices");
+var editL1Answers   = document.getElementById("editL1Answers");
+var editLevel1Notice = document.getElementById("editLevel1Notice");
 
 // Level 2
 var editLevel2Form     = document.getElementById("editLevel2Form");
@@ -98,6 +109,12 @@ var editAnswer2    = document.getElementById("editAnswer2");
 var editChoices3   = document.getElementById("editChoices3");
 var editAnswer3    = document.getElementById("editAnswer3");
 var editLevel3Notice = document.getElementById("editLevel3Notice");
+
+// Level 4
+var editLevel4Form   = document.getElementById("editLevel4Form");
+var editL4Prompt     = document.getElementById("editL4Prompt");
+var editL4Answer     = document.getElementById("editL4Answer");
+var editLevel4Notice = document.getElementById("editLevel4Notice");
 
 // ── Sync Level 2 layout variant ───────────────────────────
 
@@ -179,19 +196,44 @@ function restoreEditBlankIndicators(flags) {
 // ── Show correct section ──────────────────────────────────
 
 function showSection(type) {
+  editLevel1Section.classList.add("is-edit-hidden");
   editLevel2Section.classList.add("is-edit-hidden");
   editLevel3Section.classList.add("is-edit-hidden");
+  editLevel4Section.classList.add("is-edit-hidden");
   editNoTarget.classList.add("is-edit-hidden");
 
-  if (type === "drag-drop") {
+  if (type === "multiple-choice") {
+    editPageTitle.textContent = "Edit Level 1 Question";
+    editLevel1Section.classList.remove("is-edit-hidden");
+  } else if (type === "drag-drop") {
     editPageTitle.textContent = "Edit Level 2 Question";
     editLevel2Section.classList.remove("is-edit-hidden");
   } else if (type === "dropdown") {
     editPageTitle.textContent = "Edit Level 3 Question";
     editLevel3Section.classList.remove("is-edit-hidden");
+  } else if (type === "yes-no") {
+    editPageTitle.textContent = "Edit Level 4 Question";
+    editLevel4Section.classList.remove("is-edit-hidden");
   } else {
     editNoTarget.classList.remove("is-edit-hidden");
   }
+}
+
+// ── Pre-fill Level 1 form ─────────────────────────────────
+
+function prefillLevel1(question) {
+  editL1Prompt.value = question.prompt || "";
+
+  var choices = Array.isArray(question.choices) ? question.choices : [];
+  var letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+  editL1Choices.value = choices
+    .map(function(c, i) { return letters[i] + ". " + c; })
+    .join("\n");
+
+  var correctIndices = Array.isArray(question.correctIndices) ? question.correctIndices : [];
+  editL1Answers.value = correctIndices
+    .map(function(i) { return letters[i]; })
+    .join(",");
 }
 
 // ── Pre-fill Level 2 form ─────────────────────────────────
@@ -249,6 +291,13 @@ function prefillLevel3(question) {
   fillBlank(editChoices3, editAnswer3, blanks[2]);
 }
 
+// ── Pre-fill Level 4 form ─────────────────────────────────
+
+function prefillLevel4(question) {
+  editL4Prompt.value = question.prompt || "";
+  editL4Answer.value = String(question.correctIndex === 1 ? 1 : 0);
+}
+
 // ── Init ──────────────────────────────────────────────────
 
 function init() {
@@ -258,6 +307,13 @@ function init() {
   }
 
   showSection(target.type);
+
+  if (target.type === "multiple-choice") {
+    var bank1 = safeParseArray(STORAGE_KEY);
+    var question1 = bank1[target.index];
+    if (!question1) { showSection(null); return; }
+    prefillLevel1(question1);
+  }
 
   if (target.type === "drag-drop") {
     var bank = safeParseArray(DRAG_DROP_STORAGE_KEY);
@@ -271,6 +327,13 @@ function init() {
     var question3 = bank3[target.index];
     if (!question3) { showSection(null); return; }
     prefillLevel3(question3);
+  }
+
+  if (target.type === "yes-no") {
+    var bank4 = safeParseArray(LEVEL4_STORAGE_KEY);
+    var question4 = bank4[target.index];
+    if (!question4) { showSection(null); return; }
+    prefillLevel4(question4);
   }
 }
 
@@ -475,6 +538,103 @@ editLevel3Form.addEventListener("submit", function (event) {
   };
 
   window.localStorage.setItem(LEVEL3_STORAGE_KEY, JSON.stringify(bank));
+  window.sessionStorage.removeItem("az400-edit-target");
+  window.location.href = "manage.html";
+});
+
+// ── Save Level 1 ──────────────────────────────────────────
+
+editLevel1Form.addEventListener("submit", function (event) {
+  event.preventDefault();
+  clearNotice(editLevel1Notice);
+
+  var prompt = editL1Prompt.value.trim();
+  if (!prompt) {
+    showNotice(editLevel1Notice, "Enter a question prompt before saving.");
+    editL1Prompt.focus();
+    return;
+  }
+
+  var parsedChoices = parseChoices(editL1Choices.value);
+  if (parsedChoices.length < 2) {
+    showNotice(editLevel1Notice, "Add at least two choices.");
+    editL1Choices.focus();
+    return;
+  }
+
+  var answerRaw = editL1Answers.value.trim().toUpperCase();
+  if (!answerRaw) {
+    showNotice(editLevel1Notice, "Enter at least one correct answer letter (e.g. A or A,C).");
+    editL1Answers.focus();
+    return;
+  }
+
+  var letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+  var correctIndices = answerRaw.split(",").map(function(s) {
+    var letter = s.trim();
+    var idx = letters.indexOf(letter);
+    return idx;
+  }).filter(function(i) { return i >= 0 && i < parsedChoices.length; });
+
+  if (correctIndices.length === 0) {
+    showNotice(editLevel1Notice, "No valid answer letters found. Use letters matching the choices (e.g. A, B, C).");
+    editL1Answers.focus();
+    return;
+  }
+
+  var bank = safeParseArray(STORAGE_KEY);
+  var idx = target.index;
+
+  if (idx < 0 || idx >= bank.length) {
+    showNotice(editLevel1Notice, "Question not found in the bank. It may have been deleted.");
+    return;
+  }
+
+  bank[idx] = {
+    prompt: prompt,
+    choices: parsedChoices,
+    correctIndices: correctIndices
+  };
+
+  window.localStorage.setItem(STORAGE_KEY, JSON.stringify(bank));
+  window.sessionStorage.removeItem("az400-edit-target");
+  window.location.href = "manage.html";
+});
+
+// ── Save Level 4 ──────────────────────────────────────────
+
+editLevel4Form.addEventListener("submit", function (event) {
+  event.preventDefault();
+  clearNotice(editLevel4Notice);
+
+  var prompt = editL4Prompt.value.trim();
+  if (!prompt) {
+    showNotice(editLevel4Notice, "Enter a question prompt before saving.");
+    editL4Prompt.focus();
+    return;
+  }
+
+  var correctIndex = parseInt(editL4Answer.value, 10);
+  if (correctIndex !== 0 && correctIndex !== 1) {
+    showNotice(editLevel4Notice, "Select a valid correct answer.");
+    editL4Answer.focus();
+    return;
+  }
+
+  var bank = safeParseArray(LEVEL4_STORAGE_KEY);
+  var idx = target.index;
+
+  if (idx < 0 || idx >= bank.length) {
+    showNotice(editLevel4Notice, "Question not found in the bank. It may have been deleted.");
+    return;
+  }
+
+  bank[idx] = {
+    prompt: prompt,
+    correctIndex: correctIndex
+  };
+
+  window.localStorage.setItem(LEVEL4_STORAGE_KEY, JSON.stringify(bank));
   window.sessionStorage.removeItem("az400-edit-target");
   window.location.href = "manage.html";
 });

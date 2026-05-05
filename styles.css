@@ -733,6 +733,92 @@ h1 {
   padding: 1.1rem 0.75rem;
 }
 
+/* ── Range Selector Section ──────────────────────────────── */
+
+.range-selector-section {
+  margin-top: 1.75rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid var(--card-border);
+}
+
+.range-section-title {
+  margin: 0 0 1rem;
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--text-main);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.range-level-group {
+  margin-bottom: 1rem;
+}
+
+.range-level-group:last-child {
+  margin-bottom: 0;
+}
+
+.range-level-label {
+  margin: 0 0 0.45rem;
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.range-rows {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.range-row {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.range-row-label {
+  min-width: 6rem;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--text-main);
+}
+
+.range-button {
+  padding: 0.35rem 0.85rem;
+  border: 1.5px solid var(--accent);
+  border-radius: 0.5rem;
+  background: transparent;
+  color: var(--accent);
+  font-family: inherit;
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 140ms ease, color 140ms ease, transform 120ms ease;
+}
+
+.range-button:hover {
+  background: var(--accent);
+  color: #ffffff;
+  transform: translateY(-1px);
+}
+
+.range-button:active {
+  transform: scale(0.97);
+}
+
+.range-button--consecutive {
+  border-color: #6c757d;
+  color: #6c757d;
+}
+
+.range-button--consecutive:hover {
+  background: #6c757d;
+  color: #ffffff;
+}
+
 .exam-body {
   padding: 1rem 1.15rem 1.3rem;
 }

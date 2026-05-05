@@ -43,7 +43,31 @@ function loadPriorResult() {
   } catch(e) { return { correctCount: 0, totalQuestions: 0 }; }
 }
 
-var questionBank = shuffleArray(loadLevel3QuestionBank());
+var RANGE_CONFIG_KEY = "az400-range-config";
+
+function loadRangeConfig() {
+  try {
+    var raw = window.sessionStorage.getItem(RANGE_CONFIG_KEY);
+    if (!raw) return null;
+    var config = JSON.parse(raw);
+    if (!config || typeof config.level !== "string") return null;
+    return config;
+  } catch(e) { return null; }
+}
+
+function applyRangeToBank(bank, rangeConfig, level) {
+  if (!rangeConfig || rangeConfig.level !== level) {
+    return shuffleArray(bank);
+  }
+  window.sessionStorage.removeItem(RANGE_CONFIG_KEY);
+  var start = Math.max(0, rangeConfig.start);
+  var end = Math.min(bank.length - 1, rangeConfig.end);
+  var sliced = bank.slice(start, end + 1);
+  return rangeConfig.order === "consecutive" ? sliced : shuffleArray(sliced);
+}
+
+var _level3RangeConfig = loadRangeConfig();
+var questionBank = applyRangeToBank(loadLevel3QuestionBank(), _level3RangeConfig, "level3");
 var priorResult = loadPriorResult();
 
 var currentQI = 0;

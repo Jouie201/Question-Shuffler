@@ -7,6 +7,7 @@ const LEVEL_TWO_RESULT_STORAGE_KEY = "az400-level-two-result";
 const LEVEL_THREE_RESULT_STORAGE_KEY = "az400-level-three-result";
 const RESULT_STORAGE_KEY = "az400-quiz-result";
 const EXAM_MODE_KEY = "az400-exam-mode";
+const RANGE_CONFIG_KEY = "az400-range-config";
 
 const defaultQuestionBank = [
   {
@@ -274,7 +275,31 @@ function loadLevel4QuestionBank() {
   }
 }
 
-const questionBank = shuffleArray(loadQuestionBank());
+function loadRangeConfig() {
+  try {
+    const raw = window.sessionStorage.getItem(RANGE_CONFIG_KEY);
+    if (!raw) return null;
+    const config = JSON.parse(raw);
+    if (!config || typeof config.level !== "string") return null;
+    return config;
+  } catch {
+    return null;
+  }
+}
+
+function applyRangeToBank(bank, rangeConfig, level) {
+  if (!rangeConfig || rangeConfig.level !== level) {
+    return shuffleArray(bank);
+  }
+  window.sessionStorage.removeItem(RANGE_CONFIG_KEY);
+  const start = Math.max(0, rangeConfig.start);
+  const end = Math.min(bank.length - 1, rangeConfig.end);
+  const sliced = bank.slice(start, end + 1);
+  return rangeConfig.order === "consecutive" ? sliced : shuffleArray(sliced);
+}
+
+const _level1RangeConfig = loadRangeConfig();
+const questionBank = applyRangeToBank(loadQuestionBank(), _level1RangeConfig, "level1");
 const dragDropQuestionBank = loadDragDropQuestionBank();
 const level3QuestionBank = loadLevel3QuestionBank();
 const level4QuestionBank = loadLevel4QuestionBank();
@@ -1366,8 +1391,35 @@ choiceList.addEventListener("change", handleChoiceSelection);
 nextQuestionButton.addEventListener("click", goToNextQuestion);
 levelSelectorPanel.addEventListener("click", function (event) {
   const btn = event.target.closest(".level-choice-button");
-  if (!btn) return;
-  startExam(btn.dataset.mode);
+  if (btn) {
+    startExam(btn.dataset.mode);
+    return;
+  }
+
+  const rangeBtn = event.target.closest(".range-button");
+  if (!rangeBtn) return;
+
+  const level = rangeBtn.dataset.level;
+  const start = parseInt(rangeBtn.dataset.start, 10);
+  const end = parseInt(rangeBtn.dataset.end, 10);
+  const order = rangeBtn.dataset.order;
+
+  window.sessionStorage.setItem(RANGE_CONFIG_KEY, JSON.stringify({ level, start, end, order }));
+  window.sessionStorage.setItem(EXAM_MODE_KEY, level);
+  window.sessionStorage.removeItem(LEVEL_ONE_RESULT_STORAGE_KEY);
+  window.sessionStorage.removeItem(LEVEL_TWO_RESULT_STORAGE_KEY);
+  window.sessionStorage.removeItem(LEVEL_THREE_RESULT_STORAGE_KEY);
+  window.sessionStorage.removeItem(RESULT_STORAGE_KEY);
+
+  if (level === "level1") {
+    window.location.reload();
+  } else if (level === "level2") {
+    window.location.href = "level2.html";
+  } else if (level === "level3") {
+    window.location.href = "level3.html";
+  } else if (level === "level4") {
+    window.location.href = "level4.html";
+  }
 });
 manageQuestionsButton.addEventListener("click", function () {
   window.location.href = "manage.html";

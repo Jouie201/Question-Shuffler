@@ -136,7 +136,7 @@ function createItem(question, index, type) {
   deleteBtn.dataset.type = type;
   deleteBtn.textContent = "Delete";
 
-  if (type === "drag-drop" || type === "dropdown") {
+  if (type === "drag-drop" || type === "dropdown" || type === "multiple-choice" || type === "yes-no") {
     var editBtn = document.createElement("button");
     editBtn.className = "edit-button";
     editBtn.type = "button";

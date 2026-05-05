@@ -161,7 +161,33 @@ function loadLevelOneResult() {
   }
 }
 
-const questionBank = shuffleArray(loadDragDropQuestionBank());
+const RANGE_CONFIG_KEY = "az400-range-config";
+
+function loadRangeConfig() {
+  try {
+    const raw = window.sessionStorage.getItem(RANGE_CONFIG_KEY);
+    if (!raw) return null;
+    const config = JSON.parse(raw);
+    if (!config || typeof config.level !== "string") return null;
+    return config;
+  } catch {
+    return null;
+  }
+}
+
+function applyRangeToBank(bank, rangeConfig, level) {
+  if (!rangeConfig || rangeConfig.level !== level) {
+    return shuffleArray(bank);
+  }
+  window.sessionStorage.removeItem(RANGE_CONFIG_KEY);
+  const start = Math.max(0, rangeConfig.start);
+  const end = Math.min(bank.length - 1, rangeConfig.end);
+  const sliced = bank.slice(start, end + 1);
+  return rangeConfig.order === "consecutive" ? sliced : shuffleArray(sliced);
+}
+
+const _level2RangeConfig = loadRangeConfig();
+const questionBank = applyRangeToBank(loadDragDropQuestionBank(), _level2RangeConfig, "level2");
 const levelOneResult = loadLevelOneResult();
 const questionCount = document.getElementById("questionCount");
 const shuffleStatus = document.getElementById("shuffleStatus");
