@@ -18,9 +18,13 @@
         <div class="toolbar">
           <p class="exam-title">Saved Questions</p>
           <div class="toolbar-actions">
+            <button id="importQuestionsBtn" class="secondary-button" type="button">&#8593; Import</button>
+            <button id="exportQuestionsBtn" class="secondary-button" type="button">&#8595; Export</button>
             <a href="index.html" class="secondary-button manage-back-link">&#8592; Back to Home</a>
           </div>
         </div>
+        <input type="file" id="importFileInput" accept=".json" style="display:none" />
+        <div id="importNotice" class="import-notice is-hidden"></div>
 
         <p class="saved-bank-hint">
           Edit or delete saved questions from the bank. Click Edit to modify any question.

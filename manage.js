@@ -204,3 +204,108 @@ document.querySelectorAll(".manage-filter-btn").forEach(function (btn) {
 });
 
 renderBanks();
+
+// ── Export ────────────────────────────────────────────────
+
+document.getElementById("exportQuestionsBtn").addEventListener("click", function () {
+  var banks = loadAllBanks();
+  var payload = {
+    version: 1,
+    level1: banks.level1,
+    level2: banks.level2,
+    level3: banks.level3,
+    level4: banks.level4
+  };
+  var json = JSON.stringify(payload, null, 2);
+  var blob = new Blob([json], { type: "application/json" });
+  var url = URL.createObjectURL(blob);
+  var a = document.createElement("a");
+  a.href = url;
+  a.download = "az400-questions-backup.json";
+  a.click();
+  URL.revokeObjectURL(url);
+});
+
+// ── Import ────────────────────────────────────────────────
+
+var importFileInput = document.getElementById("importFileInput");
+var importNotice = document.getElementById("importNotice");
+
+function showImportNotice(msg, isError) {
+  importNotice.textContent = msg;
+  importNotice.className = "import-notice" + (isError ? " import-notice--error" : " import-notice--ok");
+  setTimeout(function () {
+    importNotice.className = "import-notice is-hidden";
+  }, 4000);
+}
+
+document.getElementById("importQuestionsBtn").addEventListener("click", function () {
+  importFileInput.value = "";
+  importFileInput.click();
+});
+
+importFileInput.addEventListener("change", function () {
+  var file = importFileInput.files[0];
+  if (!file) return;
+
+  var reader = new FileReader();
+  reader.onload = function (e) {
+    try {
+      var data = JSON.parse(e.target.result);
+      if (!data || typeof data !== "object") throw new Error("Invalid file");
+
+      var imported = { level1: 0, level2: 0, level3: 0, level4: 0 };
+
+      if (Array.isArray(data.level1) && data.level1.length) {
+        var existing1 = safeParseArray(STORAGE_KEY);
+        var merged1 = existing1.concat(data.level1.filter(function (q) {
+          return q && typeof q.prompt === "string" && Array.isArray(q.choices) && Array.isArray(q.correctIndices);
+        }));
+        saveBank(STORAGE_KEY, merged1);
+        imported.level1 = data.level1.length;
+      }
+
+      if (Array.isArray(data.level2) && data.level2.length) {
+        var existing2 = safeParseArray(DRAG_DROP_STORAGE_KEY);
+        var merged2 = existing2.concat(data.level2.filter(function (q) {
+          return q && typeof q.prompt === "string" && Array.isArray(q.options) && Array.isArray(q.correctMatches);
+        }));
+        saveBank(DRAG_DROP_STORAGE_KEY, merged2);
+        imported.level2 = data.level2.length;
+      }
+
+      if (Array.isArray(data.level3) && data.level3.length) {
+        var existing3 = safeParseArray(LEVEL3_STORAGE_KEY);
+        var merged3 = existing3.concat(data.level3.filter(function (q) {
+          return q && typeof q.prompt === "string" && Array.isArray(q.blanks);
+        }));
+        saveBank(LEVEL3_STORAGE_KEY, merged3);
+        imported.level3 = data.level3.length;
+      }
+
+      if (Array.isArray(data.level4) && data.level4.length) {
+        var existing4 = safeParseArray(LEVEL4_STORAGE_KEY);
+        var merged4 = existing4.concat(data.level4.filter(function (q) {
+          return q && typeof q.prompt === "string" && (q.correctIndex === 0 || q.correctIndex === 1);
+        }));
+        saveBank(LEVEL4_STORAGE_KEY, merged4);
+        imported.level4 = data.level4.length;
+      }
+
+      var total = imported.level1 + imported.level2 + imported.level3 + imported.level4;
+      if (total === 0) {
+        showImportNotice("No valid questions found in the file.", true);
+      } else {
+        showImportNotice(
+          "Imported \u2014 L1: +" + imported.level1 + "  L2: +" + imported.level2 +
+          "  L3: +" + imported.level3 + "  L4: +" + imported.level4,
+          false
+        );
+        renderBanks();
+      }
+    } catch (err) {
+      showImportNotice("Could not read file. Make sure it is a valid exported JSON backup.", true);
+    }
+  };
+  reader.readAsText(file);
+});

@@ -585,6 +585,31 @@ h1 {
   margin-bottom: 0.85rem;
 }
 
+.import-notice {
+  padding: 0.65rem 1rem;
+  border-radius: 0.5rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  margin-bottom: 0.85rem;
+  animation: rise-in 200ms ease both;
+}
+
+.import-notice.is-hidden {
+  display: none;
+}
+
+.import-notice--ok {
+  background: #d1fae5;
+  color: #065f46;
+  border: 1px solid #6ee7b7;
+}
+
+.import-notice--error {
+  background: #fee2e2;
+  color: #991b1b;
+  border: 1px solid #fca5a5;
+}
+
 .manage-filter-btn {
   flex: 0 0 auto;
   border: 1px solid var(--card-border);
