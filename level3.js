@@ -85,6 +85,7 @@ var questionCountEl = document.getElementById("questionCount");
 var quizStatus = document.getElementById("quizStatus");
 var promptContainer = document.getElementById("promptContainer");
 var nextButton = document.getElementById("nextButton");
+var retryButton = document.getElementById("retryButton");
 
 function isCurrentAnswered() {
   return answers[currentQI].every(function(a) { return a !== null; });
@@ -102,16 +103,20 @@ function updateButtonState() {
   if (isSubmitted) {
     nextButton.textContent = "See Results";
     nextButton.disabled = false;
+    retryButton.disabled = true;
   } else if (isChecked) {
     // Feedback is shown — let them advance
     nextButton.textContent = isLast ? "See Results" : "Next Question";
     nextButton.disabled = false;
+    retryButton.disabled = false;
   } else if (isLast) {
     nextButton.textContent = "Submit";
     nextButton.disabled = !isCurrentAnswered();
+    retryButton.disabled = !isCurrentAnswered();
   } else {
     nextButton.textContent = "Next Question";
     nextButton.disabled = !isCurrentAnswered();
+    retryButton.disabled = false;
   }
 }
 
@@ -382,3 +387,14 @@ promptContainer.addEventListener("click", function(event) {
 
 document.addEventListener("click", handleDocumentClick);
 nextButton.addEventListener("click", handleNext);
+
+if (retryButton) {
+  retryButton.addEventListener("click", function() {
+    if (isSubmitted || questionBank.length === 0) return;
+    answers[currentQI] = questionBank[currentQI].blanks.map(function() { return null; });
+    isChecked = false;
+    openDropdown = null;
+    renderCurrentQuestion();
+    quizStatus.textContent = "Select an answer for each blank";
+  });
+}

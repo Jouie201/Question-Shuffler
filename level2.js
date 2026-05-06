@@ -192,6 +192,7 @@ const levelOneResult = loadLevelOneResult();
 const questionCount = document.getElementById("questionCount");
 const shuffleStatus = document.getElementById("shuffleStatus");
 const shuffleOptionsButton = document.getElementById("shuffleOptionsButton");
+const retryButton = document.getElementById("retryButton");
 const dragQuestionPrompt = document.getElementById("dragQuestionPrompt");
 const dragOptionBank = document.getElementById("dragOptionBank");
 const dragTargetList = document.getElementById("dragTargetList");
@@ -240,10 +241,12 @@ function updateQuestionCount() {
 function updateNextButtonLabel() {
   if (!currentQuestion || currentQuestionIndex === questionBank.length - 1) {
     nextQuestionButton.textContent = "Submit";
+    retryButton.disabled = !currentQuestion;
     return;
   }
 
   nextQuestionButton.textContent = "Next Question";
+  retryButton.disabled = false;
 }
 
 function resetQuestionInteraction() {
@@ -392,6 +395,17 @@ function shuffleOptions() {
   currentOptionOrder = shuffleArray(currentOptionOrder);
   selectedOption = "";
   shuffleStatus.textContent = "Options shuffled";
+  renderQuestion();
+}
+
+function retryCurrentQuestion() {
+  if (!currentQuestion) {
+    return;
+  }
+
+  currentOptionOrder = shuffleArray(currentQuestion.options);
+  resetQuestionInteraction();
+  shuffleStatus.textContent = "Question reset — try again";
   renderQuestion();
 }
 
@@ -658,6 +672,7 @@ dragTargetList.addEventListener("dragover", handleTargetDragOver);
 dragTargetList.addEventListener("dragleave", handleTargetDragLeave);
 dragTargetList.addEventListener("drop", handleTargetDrop);
 shuffleOptionsButton.addEventListener("click", shuffleOptions);
+retryButton.addEventListener("click", retryCurrentQuestion);
 nextQuestionButton.addEventListener("click", goToNextQuestion);
 
 if (questionBank.length === 0) {
