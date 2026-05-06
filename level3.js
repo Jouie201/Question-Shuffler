@@ -227,11 +227,20 @@ function renderCurrentQuestion() {
 
       wrapper.appendChild(trigger);
       wrapper.appendChild(list);
+
+      if (isIncorrectBlank) {
+        var hint = document.createElement("p");
+        hint.className = "q-correct-hint";
+        hint.textContent = "\u2713 " + blank.choices[blank.correctIndex];
+        wrapper.appendChild(hint);
+      }
+
       promptLine.appendChild(wrapper);
     }
   });
 
   promptContainer.appendChild(promptLine);
+
   updateCount();
   updateButtonState();
 

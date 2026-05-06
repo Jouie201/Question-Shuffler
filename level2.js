@@ -355,6 +355,14 @@ function renderQuestion() {
     }
 
     row.append(label, slot);
+
+    if (isAnswerChecked && assignedOption !== currentQuestion.correctMatches[index]) {
+      const correctHint = document.createElement("p");
+      correctHint.className = "drag-correct-hint";
+      correctHint.textContent = "Correct answer: " + currentQuestion.correctMatches[index];
+      row.appendChild(correctHint);
+    }
+
     dragTargetList.appendChild(row);
   });
 
