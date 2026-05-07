@@ -1,6 +1,7 @@
 const DRAG_DROP_STORAGE_KEY = "az400-drag-drop-question-bank";
 const LEVEL_ONE_RESULT_STORAGE_KEY = "az400-level-one-result";
 const RESULT_STORAGE_KEY = "az400-quiz-result";
+const PRACTICE_MODE_KEY = "az400-practice-mode";
 
 const defaultDragDropQuestionBank = [
   {
@@ -193,6 +194,7 @@ const questionCount = document.getElementById("questionCount");
 const shuffleStatus = document.getElementById("shuffleStatus");
 const shuffleOptionsButton = document.getElementById("shuffleOptionsButton");
 const retryButton = document.getElementById("retryButton");
+const prevQuestionButton = document.getElementById("prevQuestionButton");
 const dragQuestionPrompt = document.getElementById("dragQuestionPrompt");
 const dragOptionBank = document.getElementById("dragOptionBank");
 const dragTargetList = document.getElementById("dragTargetList");
@@ -242,11 +244,13 @@ function updateNextButtonLabel() {
   if (!currentQuestion || currentQuestionIndex === questionBank.length - 1) {
     nextQuestionButton.textContent = "Submit";
     retryButton.disabled = !currentQuestion;
-    return;
+  } else {
+    nextQuestionButton.textContent = "Next Question";
+    retryButton.disabled = false;
   }
-
-  nextQuestionButton.textContent = "Next Question";
-  retryButton.disabled = false;
+  if (prevQuestionButton && !prevQuestionButton.hidden) {
+    prevQuestionButton.disabled = currentQuestionIndex <= 0;
+  }
 }
 
 function resetQuestionInteraction() {
@@ -674,6 +678,29 @@ dragTargetList.addEventListener("drop", handleTargetDrop);
 shuffleOptionsButton.addEventListener("click", shuffleOptions);
 retryButton.addEventListener("click", retryCurrentQuestion);
 nextQuestionButton.addEventListener("click", goToNextQuestion);
+
+if (prevQuestionButton) {
+  const isPracticeMode = window.sessionStorage.getItem(PRACTICE_MODE_KEY) === "true";
+  prevQuestionButton.hidden = !isPracticeMode;
+  prevQuestionButton.addEventListener("click", function goToPreviousQuestion() {
+    if (currentQuestionIndex <= 0) return;
+    const prevIndex = currentQuestionIndex - 1;
+    questionResults.delete(questionBank[prevIndex]);
+    loadQuestion(prevIndex);
+    shuffleStatus.textContent = "Previous question";
+  });
+}
+
+const homeButton = document.getElementById("homeButton");
+if (homeButton) {
+  const isPracticeMode = window.sessionStorage.getItem(PRACTICE_MODE_KEY) === "true";
+  homeButton.hidden = !isPracticeMode;
+  homeButton.addEventListener("click", function() {
+    window.sessionStorage.setItem("az400-show-level-select", "true");
+    window.sessionStorage.removeItem(PRACTICE_MODE_KEY);
+    window.location.href = "index.html";
+  });
+}
 
 if (questionBank.length === 0) {
   finalizeQuiz();

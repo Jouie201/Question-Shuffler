@@ -15,7 +15,12 @@
   <body>
     <main class="app-shell">
       <section class="panel">
-        <p class="exam-title">AZ-400</p>
+        <div class="exam-header">
+          <p class="exam-title">AZ-400</p>
+          <button id="homeButton" class="home-button" type="button" aria-label="Back to level select" hidden>
+            &#8962; Back to Level Select
+          </button>
+        </div>
 
         <div class="toolbar">
           <div class="toolbar-actions">
@@ -24,6 +29,9 @@
             </button>
           </div>
           <div class="toolbar-end">
+            <button id="prevQuestionButton" class="prev-button" type="button" aria-label="Go to previous question" hidden>
+              &#8592; Previous
+            </button>
             <button id="retryButton" class="retry-button" type="button" title="Reset this question and try again">
               <span class="retry-icon" aria-hidden="true">&#8635;</span> Retry
             </button>

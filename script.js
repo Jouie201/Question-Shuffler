@@ -8,6 +8,7 @@ const LEVEL_THREE_RESULT_STORAGE_KEY = "az400-level-three-result";
 const RESULT_STORAGE_KEY = "az400-quiz-result";
 const EXAM_MODE_KEY = "az400-exam-mode";
 const RANGE_CONFIG_KEY = "az400-range-config";
+const PRACTICE_MODE_KEY = "az400-practice-mode";
 
 const defaultQuestionBank = [
   {
@@ -339,6 +340,10 @@ const levelSelectorPanel = document.getElementById("levelSelectorPanel");
 const questionPrompt = document.getElementById("questionPrompt");
 const choiceList = document.getElementById("choiceList");
 const nextQuestionButton = document.getElementById("nextQuestionButton");
+const prevQuestionButton = document.getElementById("prevQuestionButton");
+const retryButton = document.getElementById("retryButton");
+const examHeader = document.getElementById("examHeader");
+const homeButton = document.getElementById("homeButton");
 const questionPromptInput = document.getElementById("questionPromptInput");
 const choicesInput = document.getElementById("choicesInput");
 const answerInput = document.getElementById("answerInput");
@@ -409,6 +414,10 @@ function isLastQuestion() {
 
 function updateNextButtonLabel() {
   nextQuestionButton.textContent = isLastQuestion() ? "Submit" : "Next Question";
+  if (prevQuestionButton && !prevQuestionButton.hidden) {
+    const idx = currentQuestion ? questionBank.indexOf(currentQuestion) : -1;
+    prevQuestionButton.disabled = idx <= 0;
+  }
 }
 
 function createSavedQuestionItem(question, index, type) {
@@ -669,6 +678,7 @@ function toggleSavedQuestions() {
 
 function startExam(mode) {
   window.sessionStorage.setItem(EXAM_MODE_KEY, mode);
+  window.sessionStorage.removeItem(PRACTICE_MODE_KEY);
   window.sessionStorage.removeItem(LEVEL_ONE_RESULT_STORAGE_KEY);
   window.sessionStorage.removeItem(LEVEL_TWO_RESULT_STORAGE_KEY);
   window.sessionStorage.removeItem(LEVEL_THREE_RESULT_STORAGE_KEY);
@@ -1389,6 +1399,43 @@ const manageQuestionsButton = document.getElementById("manageQuestionsButton");
 
 choiceList.addEventListener("change", handleChoiceSelection);
 nextQuestionButton.addEventListener("click", goToNextQuestion);
+
+if (retryButton) {
+  retryButton.addEventListener("click", function() {
+    if (!currentQuestion) return;
+    questionResults.delete(currentQuestion);
+    resetQuestionInteraction();
+    shuffleStatus.textContent = "Question reset — try again";
+    renderQuestion(currentQuestion);
+  });
+}
+
+const _isPracticeMode = window.sessionStorage.getItem(PRACTICE_MODE_KEY) === "true";
+
+if (_isPracticeMode) {
+  if (examHeader) examHeader.removeAttribute("hidden");
+  if (homeButton) {
+    homeButton.addEventListener("click", function() {
+      window.sessionStorage.removeItem(PRACTICE_MODE_KEY);
+      toggleSavedQuestions();
+    });
+  }
+  addQuestionButton.style.display = "none";
+  savedQuestionsButton.style.display = "none";
+  manageQuestionsButton.style.display = "none";
+}
+
+if (prevQuestionButton) {
+  prevQuestionButton.hidden = !_isPracticeMode;
+  prevQuestionButton.addEventListener("click", function goToPreviousQuestion() {
+    const currentIndex = questionBank.indexOf(currentQuestion);
+    if (currentIndex <= 0) return;
+    const prevQuestion = questionBank[currentIndex - 1];
+    questionResults.delete(prevQuestion);
+    loadQuestion(prevQuestion);
+    shuffleStatus.textContent = "Previous question";
+  });
+}
 levelSelectorPanel.addEventListener("click", function (event) {
   const btn = event.target.closest(".level-choice-button");
   if (btn) {
@@ -1406,6 +1453,11 @@ levelSelectorPanel.addEventListener("click", function (event) {
 
   window.sessionStorage.setItem(RANGE_CONFIG_KEY, JSON.stringify({ level, start, end, order }));
   window.sessionStorage.setItem(EXAM_MODE_KEY, level);
+  if (order === "practice") {
+    window.sessionStorage.setItem(PRACTICE_MODE_KEY, "true");
+  } else {
+    window.sessionStorage.removeItem(PRACTICE_MODE_KEY);
+  }
   window.sessionStorage.removeItem(LEVEL_ONE_RESULT_STORAGE_KEY);
   window.sessionStorage.removeItem(LEVEL_TWO_RESULT_STORAGE_KEY);
   window.sessionStorage.removeItem(LEVEL_THREE_RESULT_STORAGE_KEY);
@@ -1428,4 +1480,10 @@ manageQuestionsButton.addEventListener("click", function () {
 window.sessionStorage.removeItem(LEVEL_ONE_RESULT_STORAGE_KEY);
 syncDragFormVariant();
 loadQuestion(currentQuestion);
-showQuizView();
+
+if (window.sessionStorage.getItem("az400-show-level-select") === "true") {
+  window.sessionStorage.removeItem("az400-show-level-select");
+  toggleSavedQuestions();
+} else {
+  showQuizView();
+}

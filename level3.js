@@ -1,6 +1,7 @@
 var LEVEL3_STORAGE_KEY = "az400-level3-question-bank";
 var LEVEL_TWO_RESULT_STORAGE_KEY = "az400-level-two-result";
 var RESULT_STORAGE_KEY = "az400-quiz-result";
+var PRACTICE_MODE_KEY = "az400-practice-mode";
 
 function shuffleArray(arr) {
   var out = arr.slice();
@@ -86,6 +87,7 @@ var quizStatus = document.getElementById("quizStatus");
 var promptContainer = document.getElementById("promptContainer");
 var nextButton = document.getElementById("nextButton");
 var retryButton = document.getElementById("retryButton");
+var prevButton = document.getElementById("prevButton");
 
 function isCurrentAnswered() {
   return answers[currentQI].every(function(a) { return a !== null; });
@@ -104,19 +106,23 @@ function updateButtonState() {
     nextButton.textContent = "See Results";
     nextButton.disabled = false;
     retryButton.disabled = true;
+    if (prevButton && !prevButton.hidden) prevButton.disabled = true;
   } else if (isChecked) {
     // Feedback is shown — let them advance
     nextButton.textContent = isLast ? "See Results" : "Next Question";
     nextButton.disabled = false;
     retryButton.disabled = false;
+    if (prevButton && !prevButton.hidden) prevButton.disabled = currentQI <= 0;
   } else if (isLast) {
     nextButton.textContent = "Submit";
     nextButton.disabled = !isCurrentAnswered();
     retryButton.disabled = !isCurrentAnswered();
+    if (prevButton && !prevButton.hidden) prevButton.disabled = currentQI <= 0;
   } else {
     nextButton.textContent = "Next Question";
     nextButton.disabled = !isCurrentAnswered();
     retryButton.disabled = false;
+    if (prevButton && !prevButton.hidden) prevButton.disabled = currentQI <= 0;
   }
 }
 
@@ -396,5 +402,31 @@ if (retryButton) {
     openDropdown = null;
     renderCurrentQuestion();
     quizStatus.textContent = "Select an answer for each blank";
+  });
+}
+
+if (prevButton) {
+  var isPracticeMode = window.sessionStorage.getItem(PRACTICE_MODE_KEY) === "true";
+  prevButton.hidden = !isPracticeMode;
+  prevButton.addEventListener("click", function() {
+    if (currentQI <= 0) return;
+    currentQI--;
+    answers[currentQI] = questionBank[currentQI].blanks.map(function() { return null; });
+    isChecked = false;
+    isSubmitted = false;
+    openDropdown = null;
+    renderCurrentQuestion();
+    quizStatus.textContent = "Select an answer for each blank";
+  });
+}
+
+var homeButton = document.getElementById("homeButton");
+if (homeButton) {
+  var isPracticeModeHome = window.sessionStorage.getItem(PRACTICE_MODE_KEY) === "true";
+  homeButton.hidden = !isPracticeModeHome;
+  homeButton.addEventListener("click", function() {
+    window.sessionStorage.setItem("az400-show-level-select", "true");
+    window.sessionStorage.removeItem(PRACTICE_MODE_KEY);
+    window.location.href = "index.html";
   });
 }
