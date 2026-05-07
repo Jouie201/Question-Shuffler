@@ -1464,6 +1464,7 @@ const _isPracticeMode = window.sessionStorage.getItem(PRACTICE_MODE_KEY) === "tr
 if (_isPracticeMode) {
   if (examHeader) examHeader.removeAttribute("hidden");
   if (homeButton) {
+    homeButton.removeAttribute("hidden");
     homeButton.addEventListener("click", function() {
       window.sessionStorage.removeItem(PRACTICE_MODE_KEY);
       toggleSavedQuestions();

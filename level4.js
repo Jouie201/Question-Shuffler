@@ -203,6 +203,19 @@ choiceList.addEventListener("change", function(event) {
 
 nextButton.addEventListener("click", handleNext);
 
+// ── Practice mode home button ──────────────────────────────
+var PRACTICE_MODE_KEY = "az400-practice-mode";
+var homeButton = document.getElementById("homeButton");
+if (homeButton) {
+  var isPracticeMode = window.sessionStorage.getItem(PRACTICE_MODE_KEY) === "true";
+  homeButton.hidden = !isPracticeMode;
+  homeButton.addEventListener("click", function() {
+    window.sessionStorage.setItem("az400-show-level-select", "true");
+    window.sessionStorage.removeItem(PRACTICE_MODE_KEY);
+    window.location.href = "index.html";
+  });
+}
+
 // ── Init ───────────────────────────────────────────────────
 
 if (questionBank.length === 0) {
