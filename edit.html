@@ -185,13 +185,21 @@
                 </label>
                 <div class="l3-right-stack">
                   <label class="form-field">
+                    <span>Blank 1 Arrangement</span>
+                    <select id="editL3BlankLayout1" name="editL3BlankLayout1">
+                      <option value="vertical">Stacked (above / below each other)</option>
+                      <option value="horizontal">Side by Side (in one row)</option>
+                      <option value="diagonal">Diagonal (each blank indented)</option>
+                    </select>
+                  </label>
+                  <label class="form-field">
                     <span>Correct Answer</span>
                     <input id="editAnswer1" name="editAnswer1" type="text" placeholder="Type the exact correct choice" required />
                   </label>
                   <div class="form-field">
                     <span>Sentence beside Blank 1 <small>(optional)</small></span>
                     <div class="blank-sentence-with-side">
-                      <input id="editBlankSentence1" name="editBlankSentence1" type="text" placeholder="e.g. The pipeline uses" />
+                      <textarea id="editBlankSentence1" name="editBlankSentence1" rows="3" wrap="off" placeholder="e.g. The pipeline uses"></textarea>
                       <div class="blank-side-toggle" data-target="editBlankSide1" aria-label="Position of sentence">
                         <button type="button" class="bst-btn is-active" data-value="left">&#8592; Left</button>
                         <button type="button" class="bst-btn" data-value="right">Right &#8594;</button>
@@ -202,7 +210,7 @@
                   <div class="form-field">
                     <span>Sentence above or below Blank 1 <small>(optional)</small></span>
                     <div class="blank-sentence-with-side">
-                      <input id="editBlankVSentence1" name="editBlankVSentence1" type="text" placeholder="e.g. Complete the following statement:" />
+                      <textarea id="editBlankVSentence1" name="editBlankVSentence1" rows="3" wrap="off" placeholder="e.g. Complete the following statement:"></textarea>
                       <div class="blank-side-toggle" data-target="editBlankVSide1" aria-label="Vertical position">
                         <button type="button" class="bst-btn is-active" data-value="above">&#8593; Above</button>
                         <button type="button" class="bst-btn" data-value="below">Below &#8595;</button>
@@ -229,13 +237,21 @@
                 </label>
                 <div class="l3-right-stack">
                   <label class="form-field">
+                    <span>Blank 2 Arrangement</span>
+                    <select id="editL3BlankLayout2" name="editL3BlankLayout2">
+                      <option value="vertical">Stacked (above / below each other)</option>
+                      <option value="horizontal">Side by Side (in one row)</option>
+                      <option value="diagonal">Diagonal (each blank indented)</option>
+                    </select>
+                  </label>
+                  <label class="form-field">
                     <span>Correct Answer</span>
                     <input id="editAnswer2" name="editAnswer2" type="text" placeholder="Type the exact correct choice" required />
                   </label>
                   <div class="form-field">
                     <span>Sentence beside Blank 2 <small>(optional)</small></span>
                     <div class="blank-sentence-with-side">
-                      <input id="editBlankSentence2" name="editBlankSentence2" type="text" placeholder="e.g. and then deploys via" />
+                      <textarea id="editBlankSentence2" name="editBlankSentence2" rows="3" wrap="off" placeholder="e.g. and then deploys via"></textarea>
                       <div class="blank-side-toggle" data-target="editBlankSide2" aria-label="Position of sentence">
                         <button type="button" class="bst-btn is-active" data-value="left">&#8592; Left</button>
                         <button type="button" class="bst-btn" data-value="right">Right &#8594;</button>
@@ -246,7 +262,7 @@
                   <div class="form-field">
                     <span>Sentence above or below Blank 2 <small>(optional)</small></span>
                     <div class="blank-sentence-with-side">
-                      <input id="editBlankVSentence2" name="editBlankVSentence2" type="text" placeholder="e.g. and provides" />
+                      <textarea id="editBlankVSentence2" name="editBlankVSentence2" rows="3" wrap="off" placeholder="e.g. and provides"></textarea>
                       <div class="blank-side-toggle" data-target="editBlankVSide2" aria-label="Vertical position">
                         <button type="button" class="bst-btn is-active" data-value="above">&#8593; Above</button>
                         <button type="button" class="bst-btn" data-value="below">Below &#8595;</button>
@@ -267,13 +283,21 @@
                 </label>
                 <div class="l3-right-stack">
                   <label class="form-field">
+                    <span>Blank 3 Arrangement</span>
+                    <select id="editL3BlankLayout3" name="editL3BlankLayout3">
+                      <option value="vertical">Stacked (above / below each other)</option>
+                      <option value="horizontal">Side by Side (in one row)</option>
+                      <option value="diagonal">Diagonal (each blank indented)</option>
+                    </select>
+                  </label>
+                  <label class="form-field">
                     <span>Correct Answer</span>
                     <input id="editAnswer3" name="editAnswer3" type="text" placeholder="Type the exact correct choice" />
                   </label>
                   <div class="form-field">
                     <span>Sentence beside Blank 3 <small>(optional)</small></span>
                     <div class="blank-sentence-with-side">
-                      <input id="editBlankSentence3" name="editBlankSentence3" type="text" placeholder="e.g. which stores artifacts in" />
+                      <textarea id="editBlankSentence3" name="editBlankSentence3" rows="3" wrap="off" placeholder="e.g. which stores artifacts in"></textarea>
                       <div class="blank-side-toggle" data-target="editBlankSide3" aria-label="Position of sentence">
                         <button type="button" class="bst-btn is-active" data-value="left">&#8592; Left</button>
                         <button type="button" class="bst-btn" data-value="right">Right &#8594;</button>
@@ -284,7 +308,7 @@
                   <div class="form-field">
                     <span>Sentence above or below Blank 3 <small>(optional)</small></span>
                     <div class="blank-sentence-with-side">
-                      <input id="editBlankVSentence3" name="editBlankVSentence3" type="text" placeholder="e.g. for compliance." />
+                      <textarea id="editBlankVSentence3" name="editBlankVSentence3" rows="3" wrap="off" placeholder="e.g. for compliance."></textarea>
                       <div class="blank-side-toggle" data-target="editBlankVSide3" aria-label="Vertical position">
                         <button type="button" class="bst-btn is-active" data-value="above">&#8593; Above</button>
                         <button type="button" class="bst-btn" data-value="below">Below &#8595;</button>

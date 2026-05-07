@@ -99,6 +99,9 @@ var editLevel2Notice   = document.getElementById("editLevel2Notice");
 // Level 3
 var editLevel3Form    = document.getElementById("editLevel3Form");
 var editL3BlankLayout = document.getElementById("editL3BlankLayout");
+var editL3BlankLayout1 = document.getElementById("editL3BlankLayout1");
+var editL3BlankLayout2 = document.getElementById("editL3BlankLayout2");
+var editL3BlankLayout3 = document.getElementById("editL3BlankLayout3");
 var editSeg0          = document.getElementById("editSeg0");
 var editChoices1   = document.getElementById("editChoices1");
 var editAnswer1    = document.getElementById("editAnswer1");
@@ -281,6 +284,11 @@ function prefillLevel2(question) {
 
 function prefillLevel3(question) {
   if (editL3BlankLayout) editL3BlankLayout.value = question.blankLayout || "vertical";
+  var savedBlankLayouts = Array.isArray(question.blankLayouts) ? question.blankLayouts : [];
+  var globalLayout = question.blankLayout || "vertical";
+  if (editL3BlankLayout1) editL3BlankLayout1.value = savedBlankLayouts[0] || globalLayout;
+  if (editL3BlankLayout2) editL3BlankLayout2.value = savedBlankLayouts[1] || globalLayout;
+  if (editL3BlankLayout3) editL3BlankLayout3.value = savedBlankLayouts[2] || globalLayout;
   var segs = question.segments || {};
 
   // Fallback: parse segments from prompt if not stored
@@ -610,11 +618,18 @@ editLevel3Form.addEventListener("submit", function (event) {
     return;
   }
 
+  var blankLayouts = [
+    editL3BlankLayout1 ? editL3BlankLayout1.value : "vertical",
+    editL3BlankLayout2 ? editL3BlankLayout2.value : "vertical"
+  ];
+  if (hasBlank3) blankLayouts.push(editL3BlankLayout3 ? editL3BlankLayout3.value : "vertical");
+
   bank[idx] = {
     prompt: prompt,
     blanks: blanks,
     segments: { seg0: seg0 },
     blankLayout: editL3BlankLayout ? editL3BlankLayout.value : "vertical",
+    blankLayouts: blankLayouts,
     blankSentences: blankSentences,
     blankSentenceSides: blankSentenceSides,
     blankVerticalSentences: blankVerticalSentences,
@@ -754,6 +769,7 @@ function getL3FormData() {
   var blanks = [
     {
       choices: parseChoices(editChoices1 ? editChoices1.value : ""),
+      layout:    editL3BlankLayout1  ? editL3BlankLayout1.value            : "vertical",
       sentence:  editBlankSentence1  ? editBlankSentence1.value.trim()  : "",
       side:      editBlankSide1      ? editBlankSide1.value             : "left",
       vSentence: editBlankVSentence1 ? editBlankVSentence1.value.trim() : "",
@@ -761,6 +777,7 @@ function getL3FormData() {
     },
     {
       choices: parseChoices(editChoices2 ? editChoices2.value : ""),
+      layout:    editL3BlankLayout2  ? editL3BlankLayout2.value            : "vertical",
       sentence:  editBlankSentence2  ? editBlankSentence2.value.trim()  : "",
       side:      editBlankSide2      ? editBlankSide2.value             : "left",
       vSentence: editBlankVSentence2 ? editBlankVSentence2.value.trim() : "",
@@ -770,6 +787,7 @@ function getL3FormData() {
   if (hasBlank3) {
     blanks.push({
       choices: parseChoices(editChoices3 ? editChoices3.value : ""),
+      layout:    editL3BlankLayout3  ? editL3BlankLayout3.value            : "vertical",
       sentence:  editBlankSentence3  ? editBlankSentence3.value.trim()  : "",
       side:      editBlankSide3      ? editBlankSide3.value             : "left",
       vSentence: editBlankVSentence3 ? editBlankVSentence3.value.trim() : "",
@@ -832,14 +850,11 @@ function buildL3Preview() {
   // Blanks section — rebuild from scratch each time
   l3PreviewBlanks.innerHTML = "";
 
-  var layoutClass = "l3-preview-blanks";
-  if (data.blankLayout === "horizontal") layoutClass += " l3-preview-blanks--horizontal";
-  if (data.blankLayout === "diagonal")   layoutClass += " l3-preview-blanks--diagonal";
-  l3PreviewBlanks.className = layoutClass;
+  l3PreviewBlanks.className = "l3-preview-blanks l3-preview-blanks--perblink";
 
   data.blanks.forEach(function(blank, bi) {
     var group = document.createElement("div");
-    group.className = "prev-blank-group";
+    group.className = "prev-blank-group prev-blank-group--" + (blank.layout || "vertical");
     group.dataset.bi = String(bi);
 
     // ── Horizontal row: [left zone] [dropdown] [right zone] ──
@@ -1028,6 +1043,9 @@ function applyL3VSentenceSide(bi, vSide) {
     el.addEventListener("input", buildL3Preview);
   });
   if (editL3BlankLayout) editL3BlankLayout.addEventListener("change", buildL3Preview);
+  if (editL3BlankLayout1) editL3BlankLayout1.addEventListener("change", buildL3Preview);
+  if (editL3BlankLayout2) editL3BlankLayout2.addEventListener("change", buildL3Preview);
+  if (editL3BlankLayout3) editL3BlankLayout3.addEventListener("change", buildL3Preview);
 }());
 
 // Initial render (form is already pre-filled by prefillLevel3 at this point)

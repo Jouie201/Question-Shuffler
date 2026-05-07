@@ -177,10 +177,15 @@ function renderCurrentQuestion() {
 
   // 2. Blank dropdowns listed below the sentence
   var blanksSection = document.createElement("div");
-  var blankLayout = question.blankLayout || "vertical";
-  blanksSection.className = "q-blanks-section" +
-    (blankLayout === "horizontal" ? " q-blanks-section--horizontal" : "") +
-    (blankLayout === "diagonal"   ? " q-blanks-section--diagonal"   : "");
+  var globalLayout = question.blankLayout || "vertical";
+  var blankLayouts = Array.isArray(question.blankLayouts) ? question.blankLayouts : null;
+  blanksSection.className = "q-blanks-section";
+  if (blankLayouts) {
+    blanksSection.className += " q-blanks-section--perblink";
+  } else {
+    if (globalLayout === "horizontal") blanksSection.className += " q-blanks-section--horizontal";
+    if (globalLayout === "diagonal")   blanksSection.className += " q-blanks-section--diagonal";
+  }
 
   question.blanks.forEach(function(blank, si) {
     var selected = answers[qi][si];
@@ -191,6 +196,8 @@ function renderCurrentQuestion() {
 
     var row = document.createElement("div");
     row.className = "q-blank-row";
+
+    var blankOwnLayout = blankLayouts ? (blankLayouts[si] || globalLayout) : globalLayout;
 
     // Sentence text and which side it appears on
     var customSentence = Array.isArray(question.blankSentences) && question.blankSentences[si]
@@ -299,7 +306,7 @@ function renderCurrentQuestion() {
       vEl.textContent = vSentenceText;
 
       var group = document.createElement("div");
-      group.className = "q-blank-group";
+      group.className = "q-blank-group" + (blankLayouts ? " q-blank-group--" + blankOwnLayout : "");
       if (vSentenceSide === "above") {
         group.appendChild(vEl);
         group.appendChild(row);
@@ -309,7 +316,10 @@ function renderCurrentQuestion() {
       }
       blanksSection.appendChild(group);
     } else {
-      blanksSection.appendChild(row);
+      var rowGroup = document.createElement("div");
+      rowGroup.className = "q-blank-group" + (blankLayouts ? " q-blank-group--" + blankOwnLayout : "");
+      rowGroup.appendChild(row);
+      blanksSection.appendChild(rowGroup);
     }
   });
 
