@@ -301,6 +301,7 @@ function applyRangeToBank(bank, rangeConfig, level) {
 
 const _level1RangeConfig = loadRangeConfig();
 const questionBank = applyRangeToBank(loadQuestionBank(), _level1RangeConfig, "level1");
+let _level1ExamActive = !!_level1RangeConfig;
 const dragDropQuestionBank = loadDragDropQuestionBank();
 const level3QuestionBank = loadLevel3QuestionBank();
 const level4QuestionBank = loadLevel4QuestionBank();
@@ -409,7 +410,7 @@ function getChoiceLabel(index) {
 }
 
 function updateQuestionCount() {
-  if (currentQuestion && !quizPanel.classList.contains("is-hidden")) {
+  if (_level1ExamActive && currentQuestion) {
     const idx = questionBank.indexOf(currentQuestion);
     questionCount.textContent = `Level 1 · Question ${idx + 1} of ${questionBank.length}`;
     return;
@@ -711,6 +712,7 @@ function startExam(mode) {
     return;
   }
   // level1 or combined: start from Level 1 quiz
+  _level1ExamActive = true;
   showQuizView();
 }
 
