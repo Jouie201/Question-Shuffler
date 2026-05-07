@@ -409,6 +409,11 @@ function getChoiceLabel(index) {
 }
 
 function updateQuestionCount() {
+  if (currentQuestion && !quizPanel.classList.contains("is-hidden")) {
+    const idx = questionBank.indexOf(currentQuestion);
+    questionCount.textContent = `Level 1 · Question ${idx + 1} of ${questionBank.length}`;
+    return;
+  }
   const totalQuestionCount = questionBank.length + dragDropQuestionBank.length + level3QuestionBank.length + level4QuestionBank.length;
   questionCount.textContent = `${totalQuestionCount} questions in bank`;
 }
@@ -1465,6 +1470,10 @@ if (_isPracticeMode) {
   addQuestionButton.style.display = "none";
   savedQuestionsButton.style.display = "none";
   manageQuestionsButton.style.display = "none";
+}
+
+if (retryButton) {
+  retryButton.hidden = !_isPracticeMode;
 }
 
 if (prevQuestionButton) {

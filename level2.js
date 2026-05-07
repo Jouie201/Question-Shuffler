@@ -681,6 +681,7 @@ nextQuestionButton.addEventListener("click", goToNextQuestion);
 
 if (prevQuestionButton) {
   const isPracticeMode = window.sessionStorage.getItem(PRACTICE_MODE_KEY) === "true";
+  retryButton.hidden = !isPracticeMode;
   prevQuestionButton.hidden = !isPracticeMode;
   prevQuestionButton.addEventListener("click", function goToPreviousQuestion() {
     if (currentQuestionIndex <= 0) return;

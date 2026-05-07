@@ -480,6 +480,7 @@ if (retryButton) {
 
 if (prevButton) {
   var isPracticeMode = window.sessionStorage.getItem(PRACTICE_MODE_KEY) === "true";
+  if (retryButton) retryButton.hidden = !isPracticeMode;
   prevButton.hidden = !isPracticeMode;
   prevButton.addEventListener("click", function() {
     if (currentQI <= 0) return;
