@@ -260,20 +260,40 @@
                       required
                     />
                   </label>
+                  <div class="form-field form-field-wide">
+                    <span>Sentence beside Blank 1 <small>(optional)</small></span>
+                    <div class="blank-sentence-with-side">
+                      <input
+                        id="level3BlankSentence1Input"
+                        name="level3BlankSentence1"
+                        type="text"
+                        placeholder="e.g. The pipeline uses"
+                      />
+                      <div class="blank-side-toggle" data-target="level3BlankSide1Input" aria-label="Position of sentence">
+                        <button type="button" class="bst-btn is-active" data-value="left">&#8592; Left</button>
+                        <button type="button" class="bst-btn" data-value="right">Right &#8594;</button>
+                      </div>
+                      <input type="hidden" id="level3BlankSide1Input" name="level3BlankSide1" value="left" />
+                    </div>
+                  </div>
+                  <div class="form-field form-field-wide">
+                    <span>Sentence above or below Blank 1 <small>(optional)</small></span>
+                    <div class="blank-sentence-with-side">
+                      <input
+                        id="level3BlankVSentence1Input"
+                        name="level3BlankVSentence1"
+                        type="text"
+                        placeholder="e.g. Complete the following statement:"
+                      />
+                      <div class="blank-side-toggle" data-target="level3BlankVSide1Input" aria-label="Vertical position">
+                        <button type="button" class="bst-btn is-active" data-value="above">&#8593; Above</button>
+                        <button type="button" class="bst-btn" data-value="below">Below &#8595;</button>
+                      </div>
+                      <input type="hidden" id="level3BlankVSide1Input" name="level3BlankVSide1" value="above" />
+                    </div>
+                  </div>
                 </div>
               </fieldset>
-
-              <div class="form-grid">
-                <label class="form-field form-field-wide">
-                  <span>Sentence between Blank 1 and Blank 2</span>
-                  <textarea
-                    id="level3Seg1Input"
-                    name="level3Seg1"
-                    rows="2"
-                    placeholder="Example: provides CI/CD and"
-                  ></textarea>
-                </label>
-              </div>
 
               <fieldset class="blank-fieldset">
                 <legend>Blank 2</legend>
@@ -298,20 +318,40 @@
                       required
                     />
                   </label>
+                  <div class="form-field form-field-wide">
+                    <span>Sentence beside Blank 2 <small>(optional)</small></span>
+                    <div class="blank-sentence-with-side">
+                      <input
+                        id="level3BlankSentence2Input"
+                        name="level3BlankSentence2"
+                        type="text"
+                        placeholder="e.g. and then deploys via"
+                      />
+                      <div class="blank-side-toggle" data-target="level3BlankSide2Input" aria-label="Position of sentence">
+                        <button type="button" class="bst-btn is-active" data-value="left">&#8592; Left</button>
+                        <button type="button" class="bst-btn" data-value="right">Right &#8594;</button>
+                      </div>
+                      <input type="hidden" id="level3BlankSide2Input" name="level3BlankSide2" value="left" />
+                    </div>
+                  </div>
+                  <div class="form-field form-field-wide">
+                    <span>Sentence above or below Blank 2 <small>(optional)</small></span>
+                    <div class="blank-sentence-with-side">
+                      <input
+                        id="level3BlankVSentence2Input"
+                        name="level3BlankVSentence2"
+                        type="text"
+                        placeholder="e.g. and provides"
+                      />
+                      <div class="blank-side-toggle" data-target="level3BlankVSide2Input" aria-label="Vertical position">
+                        <button type="button" class="bst-btn is-active" data-value="above">&#8593; Above</button>
+                        <button type="button" class="bst-btn" data-value="below">Below &#8595;</button>
+                      </div>
+                      <input type="hidden" id="level3BlankVSide2Input" name="level3BlankVSide2" value="above" />
+                    </div>
+                  </div>
                 </div>
               </fieldset>
-
-              <div class="form-grid">
-                <label class="form-field form-field-wide">
-                  <span>Sentence after Blank 2 <small>(optional if using Blank 3, otherwise end of sentence)</small></span>
-                  <textarea
-                    id="level3Seg2Input"
-                    name="level3Seg2"
-                    rows="2"
-                    placeholder="Example: enables application monitoring."
-                  ></textarea>
-                </label>
-              </div>
 
               <fieldset class="blank-fieldset">
                 <legend>Blank 3 <small>(optional)</small></legend>
@@ -334,20 +374,40 @@
                       placeholder="Type the exact correct choice"
                     />
                   </label>
+                  <div class="form-field form-field-wide">
+                    <span>Sentence beside Blank 3 <small>(optional)</small></span>
+                    <div class="blank-sentence-with-side">
+                      <input
+                        id="level3BlankSentence3Input"
+                        name="level3BlankSentence3"
+                        type="text"
+                        placeholder="e.g. which stores artifacts in"
+                      />
+                      <div class="blank-side-toggle" data-target="level3BlankSide3Input" aria-label="Position of sentence">
+                        <button type="button" class="bst-btn is-active" data-value="left">&#8592; Left</button>
+                        <button type="button" class="bst-btn" data-value="right">Right &#8594;</button>
+                      </div>
+                      <input type="hidden" id="level3BlankSide3Input" name="level3BlankSide3" value="left" />
+                    </div>
+                  </div>
+                  <div class="form-field form-field-wide">
+                    <span>Sentence above or below Blank 3 <small>(optional)</small></span>
+                    <div class="blank-sentence-with-side">
+                      <input
+                        id="level3BlankVSentence3Input"
+                        name="level3BlankVSentence3"
+                        type="text"
+                        placeholder="e.g. for compliance."
+                      />
+                      <div class="blank-side-toggle" data-target="level3BlankVSide3Input" aria-label="Vertical position">
+                        <button type="button" class="bst-btn is-active" data-value="above">&#8593; Above</button>
+                        <button type="button" class="bst-btn" data-value="below">Below &#8595;</button>
+                      </div>
+                      <input type="hidden" id="level3BlankVSide3Input" name="level3BlankVSide3" value="above" />
+                    </div>
+                  </div>
                 </div>
               </fieldset>
-
-              <div class="form-grid">
-                <label class="form-field form-field-wide">
-                  <span>Sentence after Blank 3 <small>(optional)</small></span>
-                  <textarea
-                    id="level3Seg3Input"
-                    name="level3Seg3"
-                    rows="2"
-                    placeholder="Example: enables application monitoring."
-                  ></textarea>
-                </label>
-              </div>
 
               <div class="form-actions">
                 <p id="level3FormNotice" class="submit-notice" hidden></p>

@@ -14,7 +14,7 @@
   </head>
   <body>
     <main class="app-shell">
-      <section class="panel">
+      <section class="panel panel--wide">
 
         <div class="toolbar">
           <p class="exam-title" id="editPageTitle">Edit Question</p>
@@ -146,6 +146,8 @@
 
         <!-- ── Level 3 Edit Form ────────────────────────── -->
         <section id="editLevel3Section" class="form-section is-edit-hidden" aria-labelledby="editLevel3Title">
+          <div class="edit-l3-split">
+          <div class="edit-l3-form-col">
           <div class="form-section-header">
             <p class="stage-label stage-label--form">Level 3</p>
             <h2 id="editLevel3Title">Edit Dropdown Question</h2>
@@ -154,86 +156,145 @@
 
           <form id="editLevel3Form" class="question-form" novalidate>
             <div class="form-grid">
+              <label class="form-field">
+                <span>Blank Arrangement</span>
+                <select id="editL3BlankLayout" name="editL3BlankLayout">
+                  <option value="vertical">Stacked (above / below each other)</option>
+                  <option value="horizontal">Side by Side (in one row)</option>
+                  <option value="diagonal">Diagonal (each blank indented one step)</option>
+                </select>
+              </label>
               <label class="form-field form-field-wide">
                 <span>Question text before Blank 1</span>
-                <textarea id="editSeg0" name="editSeg0" rows="2" required></textarea>
+                <textarea id="editSeg0" name="editSeg0" rows="3" required></textarea>
               </label>
             </div>
 
             <fieldset class="blank-fieldset">
               <legend>Blank 1</legend>
-              <div class="form-grid">
-                <label class="form-field form-field-wide">
+              <div class="form-grid form-grid--l3-blank">
+                <label class="form-field l3-choices-field">
                   <span>Choices</span>
                   <textarea
                     id="editChoices1"
                     name="editChoices1"
-                    rows="5"
+                    rows="7"
                     placeholder="Paste one choice per line"
                     required
                   ></textarea>
                 </label>
-                <label class="form-field">
-                  <span>Correct Answer</span>
-                  <input id="editAnswer1" name="editAnswer1" type="text" placeholder="Type the exact correct choice" required />
-                </label>
+                <div class="l3-right-stack">
+                  <label class="form-field">
+                    <span>Correct Answer</span>
+                    <input id="editAnswer1" name="editAnswer1" type="text" placeholder="Type the exact correct choice" required />
+                  </label>
+                  <div class="form-field">
+                    <span>Sentence beside Blank 1 <small>(optional)</small></span>
+                    <div class="blank-sentence-with-side">
+                      <input id="editBlankSentence1" name="editBlankSentence1" type="text" placeholder="e.g. The pipeline uses" />
+                      <div class="blank-side-toggle" data-target="editBlankSide1" aria-label="Position of sentence">
+                        <button type="button" class="bst-btn is-active" data-value="left">&#8592; Left</button>
+                        <button type="button" class="bst-btn" data-value="right">Right &#8594;</button>
+                      </div>
+                      <input type="hidden" id="editBlankSide1" name="editBlankSide1" value="left" />
+                    </div>
+                  </div>
+                  <div class="form-field">
+                    <span>Sentence above or below Blank 1 <small>(optional)</small></span>
+                    <div class="blank-sentence-with-side">
+                      <input id="editBlankVSentence1" name="editBlankVSentence1" type="text" placeholder="e.g. Complete the following statement:" />
+                      <div class="blank-side-toggle" data-target="editBlankVSide1" aria-label="Vertical position">
+                        <button type="button" class="bst-btn is-active" data-value="above">&#8593; Above</button>
+                        <button type="button" class="bst-btn" data-value="below">Below &#8595;</button>
+                      </div>
+                      <input type="hidden" id="editBlankVSide1" name="editBlankVSide1" value="above" />
+                    </div>
+                  </div>
+                </div>
               </div>
             </fieldset>
 
-            <div class="form-grid">
-              <label class="form-field form-field-wide">
-                <span>Sentence between Blank 1 and Blank 2</span>
-                <textarea id="editSeg1" name="editSeg1" rows="2" placeholder="e.g. provides CI/CD and"></textarea>
-              </label>
-            </div>
-
             <fieldset class="blank-fieldset">
               <legend>Blank 2</legend>
-              <div class="form-grid">
-                <label class="form-field form-field-wide">
+              <div class="form-grid form-grid--l3-blank">
+                <label class="form-field l3-choices-field">
                   <span>Choices</span>
                   <textarea
                     id="editChoices2"
                     name="editChoices2"
-                    rows="5"
+                    rows="7"
                     placeholder="Paste one choice per line"
                     required
                   ></textarea>
                 </label>
-                <label class="form-field">
-                  <span>Correct Answer</span>
-                  <input id="editAnswer2" name="editAnswer2" type="text" placeholder="Type the exact correct choice" required />
-                </label>
+                <div class="l3-right-stack">
+                  <label class="form-field">
+                    <span>Correct Answer</span>
+                    <input id="editAnswer2" name="editAnswer2" type="text" placeholder="Type the exact correct choice" required />
+                  </label>
+                  <div class="form-field">
+                    <span>Sentence beside Blank 2 <small>(optional)</small></span>
+                    <div class="blank-sentence-with-side">
+                      <input id="editBlankSentence2" name="editBlankSentence2" type="text" placeholder="e.g. and then deploys via" />
+                      <div class="blank-side-toggle" data-target="editBlankSide2" aria-label="Position of sentence">
+                        <button type="button" class="bst-btn is-active" data-value="left">&#8592; Left</button>
+                        <button type="button" class="bst-btn" data-value="right">Right &#8594;</button>
+                      </div>
+                      <input type="hidden" id="editBlankSide2" name="editBlankSide2" value="left" />
+                    </div>
+                  </div>
+                  <div class="form-field">
+                    <span>Sentence above or below Blank 2 <small>(optional)</small></span>
+                    <div class="blank-sentence-with-side">
+                      <input id="editBlankVSentence2" name="editBlankVSentence2" type="text" placeholder="e.g. and provides" />
+                      <div class="blank-side-toggle" data-target="editBlankVSide2" aria-label="Vertical position">
+                        <button type="button" class="bst-btn is-active" data-value="above">&#8593; Above</button>
+                        <button type="button" class="bst-btn" data-value="below">Below &#8595;</button>
+                      </div>
+                      <input type="hidden" id="editBlankVSide2" name="editBlankVSide2" value="above" />
+                    </div>
+                  </div>
+                </div>
               </div>
             </fieldset>
-
-            <div class="form-grid">
-              <label class="form-field form-field-wide">
-                <span>Sentence after Blank 2 <small>(optional if using Blank 3, otherwise end of sentence)</small></span>
-                <textarea id="editSeg2" name="editSeg2" rows="2" placeholder="e.g. enables application monitoring."></textarea>
-              </label>
-            </div>
 
             <fieldset class="blank-fieldset">
               <legend>Blank 3 <small>(optional — leave Choices empty to remove)</small></legend>
-              <div class="form-grid">
-                <label class="form-field form-field-wide">
+              <div class="form-grid form-grid--l3-blank">
+                <label class="form-field l3-choices-field">
                   <span>Choices</span>
-                  <textarea id="editChoices3" name="editChoices3" rows="5" placeholder="Leave empty to skip Blank 3"></textarea>
+                  <textarea id="editChoices3" name="editChoices3" rows="7" placeholder="Leave empty to skip Blank 3"></textarea>
                 </label>
-                <label class="form-field">
-                  <span>Correct Answer</span>
-                  <input id="editAnswer3" name="editAnswer3" type="text" placeholder="Type the exact correct choice" />
-                </label>
+                <div class="l3-right-stack">
+                  <label class="form-field">
+                    <span>Correct Answer</span>
+                    <input id="editAnswer3" name="editAnswer3" type="text" placeholder="Type the exact correct choice" />
+                  </label>
+                  <div class="form-field">
+                    <span>Sentence beside Blank 3 <small>(optional)</small></span>
+                    <div class="blank-sentence-with-side">
+                      <input id="editBlankSentence3" name="editBlankSentence3" type="text" placeholder="e.g. which stores artifacts in" />
+                      <div class="blank-side-toggle" data-target="editBlankSide3" aria-label="Position of sentence">
+                        <button type="button" class="bst-btn is-active" data-value="left">&#8592; Left</button>
+                        <button type="button" class="bst-btn" data-value="right">Right &#8594;</button>
+                      </div>
+                      <input type="hidden" id="editBlankSide3" name="editBlankSide3" value="left" />
+                    </div>
+                  </div>
+                  <div class="form-field">
+                    <span>Sentence above or below Blank 3 <small>(optional)</small></span>
+                    <div class="blank-sentence-with-side">
+                      <input id="editBlankVSentence3" name="editBlankVSentence3" type="text" placeholder="e.g. for compliance." />
+                      <div class="blank-side-toggle" data-target="editBlankVSide3" aria-label="Vertical position">
+                        <button type="button" class="bst-btn is-active" data-value="above">&#8593; Above</button>
+                        <button type="button" class="bst-btn" data-value="below">Below &#8595;</button>
+                      </div>
+                      <input type="hidden" id="editBlankVSide3" name="editBlankVSide3" value="above" />
+                    </div>
+                  </div>
+                </div>
               </div>
             </fieldset>
-
-            <div class="form-grid">
-              <label class="form-field form-field-wide">
-                <span>Sentence after Blank 3 <small>(optional)</small></span>
-                <textarea id="editSeg3" name="editSeg3" rows="2" placeholder="e.g. for compliance."></textarea>
-              </label>
-            </div>
 
             <div class="form-actions">
               <p id="editLevel3Notice" class="submit-notice" hidden></p>
@@ -241,6 +302,20 @@
               <button class="shuffle-button" type="submit">Save Changes</button>
             </div>
           </form>
+          </div><!-- /.edit-l3-form-col -->
+
+          <aside class="edit-l3-preview-col" aria-label="Live preview of question output">
+            <div class="l3-preview-panel">
+              <div class="l3-preview-header">
+                <span class="l3-preview-title">Live Preview</span>
+                <span class="l3-preview-hint">Drag sentence to reposition</span>
+              </div>
+              <p class="stage-label" style="margin-bottom: 0.75rem">Level 3 &middot; Dropdown</p>
+              <div id="l3PreviewPrompt" class="l3-preview-prompt"></div>
+              <div id="l3PreviewBlanks" class="l3-preview-blanks"></div>
+            </div>
+          </aside>
+          </div><!-- /.edit-l3-split -->
         </section>
 
         <!-- ── Level 1 Edit Form ────────────────────────── -->

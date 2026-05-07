@@ -97,17 +97,27 @@ var editLeftLabel5     = document.getElementById("editLeftLabel5");
 var editLevel2Notice   = document.getElementById("editLevel2Notice");
 
 // Level 3
-var editLevel3Form = document.getElementById("editLevel3Form");
-var editSeg0       = document.getElementById("editSeg0");
-var editSeg1       = document.getElementById("editSeg1");
-var editSeg2       = document.getElementById("editSeg2");
-var editSeg3       = document.getElementById("editSeg3");
+var editLevel3Form    = document.getElementById("editLevel3Form");
+var editL3BlankLayout = document.getElementById("editL3BlankLayout");
+var editSeg0          = document.getElementById("editSeg0");
 var editChoices1   = document.getElementById("editChoices1");
 var editAnswer1    = document.getElementById("editAnswer1");
 var editChoices2   = document.getElementById("editChoices2");
 var editAnswer2    = document.getElementById("editAnswer2");
 var editChoices3   = document.getElementById("editChoices3");
 var editAnswer3    = document.getElementById("editAnswer3");
+var editBlankSentence1 = document.getElementById("editBlankSentence1");
+var editBlankSentence2 = document.getElementById("editBlankSentence2");
+var editBlankSentence3 = document.getElementById("editBlankSentence3");
+var editBlankSide1 = document.getElementById("editBlankSide1");
+var editBlankSide2 = document.getElementById("editBlankSide2");
+var editBlankSide3 = document.getElementById("editBlankSide3");
+var editBlankVSentence1 = document.getElementById("editBlankVSentence1");
+var editBlankVSentence2 = document.getElementById("editBlankVSentence2");
+var editBlankVSentence3 = document.getElementById("editBlankVSentence3");
+var editBlankVSide1 = document.getElementById("editBlankVSide1");
+var editBlankVSide2 = document.getElementById("editBlankVSide2");
+var editBlankVSide3 = document.getElementById("editBlankVSide3");
 var editLevel3Notice = document.getElementById("editLevel3Notice");
 
 // Level 4
@@ -270,11 +280,21 @@ function prefillLevel2(question) {
 // ── Pre-fill Level 3 form ─────────────────────────────────
 
 function prefillLevel3(question) {
+  if (editL3BlankLayout) editL3BlankLayout.value = question.blankLayout || "vertical";
   var segs = question.segments || {};
+
+  // Fallback: parse segments from prompt if not stored
+  if (!segs.seg0 && typeof question.prompt === "string" && question.prompt.length > 0) {
+    var parts = question.prompt.split(/\[blank\]/i);
+    segs = {
+      seg0: (parts[0] || "").trim(),
+      seg1: (parts[1] || "").trim(),
+      seg2: (parts[2] || "").trim(),
+      seg3: (parts[3] || "").trim()
+    };
+  }
+
   editSeg0.value = segs.seg0 || "";
-  editSeg1.value = segs.seg1 || "";
-  editSeg2.value = segs.seg2 || "";
-  editSeg3.value = segs.seg3 || "";
 
   var blanks = Array.isArray(question.blanks) ? question.blanks : [];
 
@@ -289,6 +309,41 @@ function prefillLevel3(question) {
   fillBlank(editChoices1, editAnswer1, blanks[0]);
   fillBlank(editChoices2, editAnswer2, blanks[1]);
   fillBlank(editChoices3, editAnswer3, blanks[2]);
+
+  var sentences = Array.isArray(question.blankSentences) ? question.blankSentences : [];
+  editBlankSentence1.value = sentences[0] || "";
+  editBlankSentence2.value = sentences[1] || "";
+  editBlankSentence3.value = sentences[2] || "";
+
+  var sides = Array.isArray(question.blankSentenceSides) ? question.blankSentenceSides : [];
+  if (editBlankSide1) editBlankSide1.value = sides[0] === "right" ? "right" : "left";
+  if (editBlankSide2) editBlankSide2.value = sides[1] === "right" ? "right" : "left";
+  if (editBlankSide3) editBlankSide3.value = sides[2] === "right" ? "right" : "left";
+
+  // Vertical sentences — stored value takes priority; fall back to old seg1/seg2/seg3
+  var vSentences = Array.isArray(question.blankVerticalSentences) ? question.blankVerticalSentences : [];
+  var vSides = Array.isArray(question.blankVerticalSides) ? question.blankVerticalSides : [];
+  if (editBlankVSentence1) editBlankVSentence1.value = vSentences[0] || segs.seg1 || "";
+  if (editBlankVSentence2) editBlankVSentence2.value = vSentences[1] || segs.seg2 || "";
+  if (editBlankVSentence3) editBlankVSentence3.value = vSentences[2] || segs.seg3 || "";
+  if (editBlankVSide1) editBlankVSide1.value = vSides[0] === "below" ? "below" : "above";
+  if (editBlankVSide2) editBlankVSide2.value = vSides[1] === "below" ? "below" : "above";
+  if (editBlankVSide3) editBlankVSide3.value = vSides[2] === "below" ? "below" : "above";
+
+  // Sync all toggle buttons to their restored values
+  [
+    { toggleEl: document.querySelector('[data-target="editBlankSide1"]'), val: editBlankSide1 ? editBlankSide1.value : "left" },
+    { toggleEl: document.querySelector('[data-target="editBlankSide2"]'), val: editBlankSide2 ? editBlankSide2.value : "left" },
+    { toggleEl: document.querySelector('[data-target="editBlankSide3"]'), val: editBlankSide3 ? editBlankSide3.value : "left" },
+    { toggleEl: document.querySelector('[data-target="editBlankVSide1"]'), val: editBlankVSide1 ? editBlankVSide1.value : "above" },
+    { toggleEl: document.querySelector('[data-target="editBlankVSide2"]'), val: editBlankVSide2 ? editBlankVSide2.value : "above" },
+    { toggleEl: document.querySelector('[data-target="editBlankVSide3"]'), val: editBlankVSide3 ? editBlankVSide3.value : "above" }
+  ].forEach(function(item) {
+    if (!item.toggleEl) return;
+    item.toggleEl.querySelectorAll(".bst-btn").forEach(function(b) {
+      b.classList.toggle("is-active", b.dataset.value === item.val);
+    });
+  });
 }
 
 // ── Pre-fill Level 4 form ─────────────────────────────────
@@ -424,9 +479,6 @@ editLevel3Form.addEventListener("submit", function (event) {
   clearNotice(editLevel3Notice);
 
   var seg0 = editSeg0.value.trim();
-  var seg1 = editSeg1.value.trim();
-  var seg2 = editSeg2.value.trim();
-  var seg3 = editSeg3.value.trim();
 
   if (!seg0) {
     showNotice(editLevel3Notice, "Enter the question text before Blank 1.");
@@ -508,12 +560,7 @@ editLevel3Form.addEventListener("submit", function (event) {
   }
 
   // Build prompt
-  var prompt = seg0 + " [blank] " + (seg1 ? seg1 + " " : "") + "[blank]";
-  if (hasBlank3) {
-    prompt += (seg2 ? " " + seg2 : "") + " [blank]" + (seg3 ? " " + seg3 : "");
-  } else {
-    prompt += (seg2 ? " " + seg2 : "");
-  }
+  var prompt = seg0 + " [blank] [blank]" + (hasBlank3 ? " [blank]" : "");
 
   var blanks = [
     { choices: choices1, correctIndex: correct1Index },
@@ -521,6 +568,38 @@ editLevel3Form.addEventListener("submit", function (event) {
   ];
   if (hasBlank3) {
     blanks.push({ choices: choices3, correctIndex: correct3Index });
+  }
+
+  var blankSentences = [
+    editBlankSentence1.value.trim(),
+    editBlankSentence2.value.trim()
+  ];
+  if (hasBlank3) {
+    blankSentences.push(editBlankSentence3.value.trim());
+  }
+
+  var blankSentenceSides = [
+    editBlankSide1 && editBlankSide1.value === "right" ? "right" : "left",
+    editBlankSide2 && editBlankSide2.value === "right" ? "right" : "left"
+  ];
+  if (hasBlank3) {
+    blankSentenceSides.push(editBlankSide3 && editBlankSide3.value === "right" ? "right" : "left");
+  }
+
+  var blankVerticalSentences = [
+    editBlankVSentence1 ? editBlankVSentence1.value.trim() : "",
+    editBlankVSentence2 ? editBlankVSentence2.value.trim() : ""
+  ];
+  if (hasBlank3) {
+    blankVerticalSentences.push(editBlankVSentence3 ? editBlankVSentence3.value.trim() : "");
+  }
+
+  var blankVerticalSides = [
+    editBlankVSide1 && editBlankVSide1.value === "below" ? "below" : "above",
+    editBlankVSide2 && editBlankVSide2.value === "below" ? "below" : "above"
+  ];
+  if (hasBlank3) {
+    blankVerticalSides.push(editBlankVSide3 && editBlankVSide3.value === "below" ? "below" : "above");
   }
 
   var bank = safeParseArray(LEVEL3_STORAGE_KEY);
@@ -534,12 +613,34 @@ editLevel3Form.addEventListener("submit", function (event) {
   bank[idx] = {
     prompt: prompt,
     blanks: blanks,
-    segments: { seg0: seg0, seg1: seg1, seg2: seg2, seg3: seg3 }
+    segments: { seg0: seg0 },
+    blankLayout: editL3BlankLayout ? editL3BlankLayout.value : "vertical",
+    blankSentences: blankSentences,
+    blankSentenceSides: blankSentenceSides,
+    blankVerticalSentences: blankVerticalSentences,
+    blankVerticalSides: blankVerticalSides
   };
 
   window.localStorage.setItem(LEVEL3_STORAGE_KEY, JSON.stringify(bank));
   window.sessionStorage.removeItem("az400-edit-target");
   window.location.href = "manage.html";
+});
+
+// ── Blank-side segmented toggle (edit page) ───────────────
+document.addEventListener("click", function(e) {
+  var btn = e.target.closest(".blank-side-toggle .bst-btn");
+  if (!btn) return;
+  var toggle = btn.closest(".blank-side-toggle");
+  var targetId = toggle.dataset.target;
+  var hidden = document.getElementById(targetId);
+  if (!hidden) return;
+  toggle.querySelectorAll(".bst-btn").forEach(function(b) { b.classList.remove("is-active"); });
+  btn.classList.add("is-active");
+  hidden.value = btn.dataset.value;
+  // Rebuild preview if this toggle belongs to the Level 3 form
+  if (btn.closest("#editLevel3Section")) {
+    buildL3Preview();
+  }
 });
 
 // ── Save Level 1 ──────────────────────────────────────────
@@ -638,3 +739,296 @@ editLevel4Form.addEventListener("submit", function (event) {
   window.sessionStorage.removeItem("az400-edit-target");
   window.location.href = "manage.html";
 });
+
+// ── Level 3 Live Preview ──────────────────────────────────────
+// DOM refs for the preview panel
+var l3PreviewPrompt = document.getElementById("l3PreviewPrompt");
+var l3PreviewBlanks = document.getElementById("l3PreviewBlanks");
+
+// Drag state (null when nothing is being dragged)
+var l3DragState = null;
+
+// Read all L3 form field values into a plain data object
+function getL3FormData() {
+  var hasBlank3 = editChoices3 && editChoices3.value.trim().length > 0;
+  var blanks = [
+    {
+      choices: parseChoices(editChoices1 ? editChoices1.value : ""),
+      sentence:  editBlankSentence1  ? editBlankSentence1.value.trim()  : "",
+      side:      editBlankSide1      ? editBlankSide1.value             : "left",
+      vSentence: editBlankVSentence1 ? editBlankVSentence1.value.trim() : "",
+      vSide:     editBlankVSide1     ? editBlankVSide1.value            : "above"
+    },
+    {
+      choices: parseChoices(editChoices2 ? editChoices2.value : ""),
+      sentence:  editBlankSentence2  ? editBlankSentence2.value.trim()  : "",
+      side:      editBlankSide2      ? editBlankSide2.value             : "left",
+      vSentence: editBlankVSentence2 ? editBlankVSentence2.value.trim() : "",
+      vSide:     editBlankVSide2     ? editBlankVSide2.value            : "above"
+    }
+  ];
+  if (hasBlank3) {
+    blanks.push({
+      choices: parseChoices(editChoices3 ? editChoices3.value : ""),
+      sentence:  editBlankSentence3  ? editBlankSentence3.value.trim()  : "",
+      side:      editBlankSide3      ? editBlankSide3.value             : "left",
+      vSentence: editBlankVSentence3 ? editBlankVSentence3.value.trim() : "",
+      vSide:     editBlankVSide3     ? editBlankVSide3.value            : "above"
+    });
+  }
+  return {
+    seg0: editSeg0 ? editSeg0.value.trim() : "",
+    blankLayout: editL3BlankLayout ? editL3BlankLayout.value : "vertical",
+    blanks: blanks
+  };
+}
+
+// Create the draggable horizontal sentence chip
+function makePreviewSentenceEl(text, bi) {
+  var el = document.createElement("span");
+  el.className = "prev-sentence";
+  el.draggable = true;
+  el.dataset.bi = String(bi);
+  el.dataset.type = "sentence";
+  el.textContent = text;
+  return el;
+}
+
+// Create the draggable vertical sentence chip
+function makePreviewVSentenceEl(text, bi) {
+  var el = document.createElement("div");
+  el.className = "prev-vsentence";
+  el.draggable = true;
+  el.dataset.bi = String(bi);
+  el.dataset.type = "vsentence";
+  el.textContent = text;
+  return el;
+}
+
+// Create a vertical drop zone (above/below)
+function makePreviewVDropZone(bi, vside) {
+  var el = document.createElement("div");
+  el.className = "prev-vdrop prev-vdrop--" + vside;
+  el.dataset.bi = String(bi);
+  el.dataset.vside = vside;
+  return el;
+}
+
+// Render the full preview panel from current form values
+function buildL3Preview() {
+  if (!l3PreviewPrompt || !l3PreviewBlanks) return;
+
+  var data = getL3FormData();
+
+  // Prompt text
+  if (data.seg0) {
+    l3PreviewPrompt.textContent = data.seg0;
+    l3PreviewPrompt.classList.remove("l3-preview-empty");
+  } else {
+    l3PreviewPrompt.textContent = "Enter the question text above\u2026";
+    l3PreviewPrompt.classList.add("l3-preview-empty");
+  }
+
+  // Blanks section — rebuild from scratch each time
+  l3PreviewBlanks.innerHTML = "";
+
+  var layoutClass = "l3-preview-blanks";
+  if (data.blankLayout === "horizontal") layoutClass += " l3-preview-blanks--horizontal";
+  if (data.blankLayout === "diagonal")   layoutClass += " l3-preview-blanks--diagonal";
+  l3PreviewBlanks.className = layoutClass;
+
+  data.blanks.forEach(function(blank, bi) {
+    var group = document.createElement("div");
+    group.className = "prev-blank-group";
+    group.dataset.bi = String(bi);
+
+    // ── Horizontal row: [left zone] [dropdown] [right zone] ──
+    var row = document.createElement("div");
+    row.className = "prev-blank-row";
+
+    var leftZone = document.createElement("div");
+    leftZone.className = "prev-drop-zone prev-drop-zone--left";
+    leftZone.dataset.bi = String(bi);
+    leftZone.dataset.side = "left";
+    if (blank.sentence && blank.side === "left") {
+      leftZone.appendChild(makePreviewSentenceEl(blank.sentence, bi));
+    }
+
+    var trigger = document.createElement("div");
+    trigger.className = "prev-blank-trigger";
+    trigger.setAttribute("aria-hidden", "true");
+    var triggerLabel = document.createElement("span");
+    triggerLabel.textContent = blank.choices.length ? "Select" : "Blank " + (bi + 1);
+    var triggerArrow = document.createElement("span");
+    triggerArrow.className = "prev-blank-trigger-arrow";
+    triggerArrow.textContent = "\u25be";
+    trigger.appendChild(triggerLabel);
+    trigger.appendChild(triggerArrow);
+
+    var rightZone = document.createElement("div");
+    rightZone.className = "prev-drop-zone prev-drop-zone--right";
+    rightZone.dataset.bi = String(bi);
+    rightZone.dataset.side = "right";
+    if (blank.sentence && blank.side === "right") {
+      rightZone.appendChild(makePreviewSentenceEl(blank.sentence, bi));
+    }
+
+    row.appendChild(leftZone);
+    row.appendChild(trigger);
+    row.appendChild(rightZone);
+
+    // ── Vertical sentence wrapping ──
+    if (blank.vSentence) {
+      var vEl       = makePreviewVSentenceEl(blank.vSentence, bi);
+      var vAboveDrop = makePreviewVDropZone(bi, "above");
+      var vBelowDrop = makePreviewVDropZone(bi, "below");
+
+      if (blank.vSide === "below") {
+        group.appendChild(vAboveDrop);
+        group.appendChild(row);
+        group.appendChild(vEl);
+        group.appendChild(vBelowDrop);
+      } else {
+        group.appendChild(vEl);
+        group.appendChild(vAboveDrop);
+        group.appendChild(row);
+        group.appendChild(vBelowDrop);
+      }
+    } else {
+      group.appendChild(row);
+    }
+
+    l3PreviewBlanks.appendChild(group);
+  });
+
+  attachL3PreviewDragEvents();
+}
+
+// Attach HTML5 drag-and-drop handlers (re-attached after each render)
+function attachL3PreviewDragEvents() {
+  if (!l3PreviewBlanks) return;
+
+  // Draggable sentence chips
+  l3PreviewBlanks.querySelectorAll(".prev-sentence, .prev-vsentence").forEach(function(el) {
+    el.addEventListener("dragstart", function(e) {
+      l3DragState = { bi: Number(el.dataset.bi), type: el.dataset.type };
+      e.dataTransfer.effectAllowed = "move";
+      // Defer the dimming so the drag image captures the undimmed state
+      setTimeout(function() { el.classList.add("is-dragging"); }, 0);
+    });
+
+    el.addEventListener("dragend", function() {
+      el.classList.remove("is-dragging");
+      l3DragState = null;
+      l3PreviewBlanks.querySelectorAll(".is-drag-over").forEach(function(z) {
+        z.classList.remove("is-drag-over");
+      });
+    });
+  });
+
+  // Horizontal drop zones (left / right of the blank)
+  l3PreviewBlanks.querySelectorAll(".prev-drop-zone").forEach(function(zone) {
+    zone.addEventListener("dragover", function(e) {
+      if (!l3DragState || l3DragState.type !== "sentence") return;
+      if (Number(zone.dataset.bi) !== l3DragState.bi) return;
+      e.preventDefault();
+      e.dataTransfer.dropEffect = "move";
+      l3PreviewBlanks.querySelectorAll(".prev-drop-zone.is-drag-over").forEach(function(z) {
+        if (z !== zone) z.classList.remove("is-drag-over");
+      });
+      zone.classList.add("is-drag-over");
+    });
+
+    zone.addEventListener("dragleave", function(e) {
+      if (!zone.contains(e.relatedTarget)) {
+        zone.classList.remove("is-drag-over");
+      }
+    });
+
+    zone.addEventListener("drop", function(e) {
+      e.preventDefault();
+      zone.classList.remove("is-drag-over");
+      if (!l3DragState || l3DragState.type !== "sentence") return;
+      var bi = Number(zone.dataset.bi);
+      if (bi !== l3DragState.bi) return;
+      applyL3SentenceSide(bi, zone.dataset.side);
+    });
+  });
+
+  // Vertical drop zones (above / below the blank row)
+  l3PreviewBlanks.querySelectorAll(".prev-vdrop").forEach(function(zone) {
+    zone.addEventListener("dragover", function(e) {
+      if (!l3DragState || l3DragState.type !== "vsentence") return;
+      if (Number(zone.dataset.bi) !== l3DragState.bi) return;
+      e.preventDefault();
+      e.dataTransfer.dropEffect = "move";
+      l3PreviewBlanks.querySelectorAll(".prev-vdrop.is-drag-over").forEach(function(z) {
+        if (z !== zone) z.classList.remove("is-drag-over");
+      });
+      zone.classList.add("is-drag-over");
+    });
+
+    zone.addEventListener("dragleave", function(e) {
+      if (!zone.contains(e.relatedTarget)) {
+        zone.classList.remove("is-drag-over");
+      }
+    });
+
+    zone.addEventListener("drop", function(e) {
+      e.preventDefault();
+      zone.classList.remove("is-drag-over");
+      if (!l3DragState || l3DragState.type !== "vsentence") return;
+      var bi = Number(zone.dataset.bi);
+      if (bi !== l3DragState.bi) return;
+      applyL3VSentenceSide(bi, zone.dataset.vside);
+    });
+  });
+}
+
+// Update horizontal sentence side and sync form controls
+function applyL3SentenceSide(bi, side) {
+  var hiddenInputs = [editBlankSide1, editBlankSide2, editBlankSide3];
+  var hiddenEl = hiddenInputs[bi];
+  if (hiddenEl) hiddenEl.value = side;
+
+  var toggleEl = document.querySelector('[data-target="editBlankSide' + (bi + 1) + '"]');
+  if (toggleEl) {
+    toggleEl.querySelectorAll(".bst-btn").forEach(function(b) {
+      b.classList.toggle("is-active", b.dataset.value === side);
+    });
+  }
+  buildL3Preview();
+}
+
+// Update vertical sentence side and sync form controls
+function applyL3VSentenceSide(bi, vSide) {
+  var hiddenInputs = [editBlankVSide1, editBlankVSide2, editBlankVSide3];
+  var hiddenEl = hiddenInputs[bi];
+  if (hiddenEl) hiddenEl.value = vSide;
+
+  var toggleEl = document.querySelector('[data-target="editBlankVSide' + (bi + 1) + '"]');
+  if (toggleEl) {
+    toggleEl.querySelectorAll(".bst-btn").forEach(function(b) {
+      b.classList.toggle("is-active", b.dataset.value === vSide);
+    });
+  }
+  buildL3Preview();
+}
+
+// Listen for input changes on all L3 form fields to keep preview in sync
+(function () {
+  var l3Fields = [
+    editSeg0,
+    editChoices1, editAnswer1, editBlankSentence1, editBlankVSentence1,
+    editChoices2, editAnswer2, editBlankSentence2, editBlankVSentence2,
+    editChoices3, editAnswer3, editBlankSentence3, editBlankVSentence3
+  ];
+  l3Fields.forEach(function(el) {
+    if (!el) return;
+    el.addEventListener("input", buildL3Preview);
+  });
+  if (editL3BlankLayout) editL3BlankLayout.addEventListener("change", buildL3Preview);
+}());
+
+// Initial render (form is already pre-filled by prefillLevel3 at this point)
+buildL3Preview();

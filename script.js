@@ -366,15 +366,24 @@ const level4PromptInput = document.getElementById("level4PromptInput");
 const level4AnswerInput = document.getElementById("level4AnswerInput");
 const level4FormNotice = document.getElementById("level4FormNotice");
 const level3Seg0Input = document.getElementById("level3Seg0Input");
-const level3Seg1Input = document.getElementById("level3Seg1Input");
-const level3Seg2Input = document.getElementById("level3Seg2Input");
-const level3Seg3Input = document.getElementById("level3Seg3Input");
 const level3Choices1Input = document.getElementById("level3Choices1Input");
 const level3Answer1Input = document.getElementById("level3Answer1Input");
 const level3Choices2Input = document.getElementById("level3Choices2Input");
 const level3Answer2Input = document.getElementById("level3Answer2Input");
 const level3Choices3Input = document.getElementById("level3Choices3Input");
 const level3Answer3Input = document.getElementById("level3Answer3Input");
+const level3BlankSentence1Input = document.getElementById("level3BlankSentence1Input");
+const level3BlankSentence2Input = document.getElementById("level3BlankSentence2Input");
+const level3BlankSentence3Input = document.getElementById("level3BlankSentence3Input");
+const level3BlankSide1Input = document.getElementById("level3BlankSide1Input");
+const level3BlankSide2Input = document.getElementById("level3BlankSide2Input");
+const level3BlankSide3Input = document.getElementById("level3BlankSide3Input");
+const level3BlankVSentence1Input = document.getElementById("level3BlankVSentence1Input");
+const level3BlankVSentence2Input = document.getElementById("level3BlankVSentence2Input");
+const level3BlankVSentence3Input = document.getElementById("level3BlankVSentence3Input");
+const level3BlankVSide1Input = document.getElementById("level3BlankVSide1Input");
+const level3BlankVSide2Input = document.getElementById("level3BlankVSide2Input");
+const level3BlankVSide3Input = document.getElementById("level3BlankVSide3Input");
 const questionFormNotice = document.getElementById("questionFormNotice");
 const dragFormNotice = document.getElementById("dragFormNotice");
 const level3FormNotice = document.getElementById("level3FormNotice");
@@ -1017,9 +1026,18 @@ function handleAddLevel3Question(event) {
   event.preventDefault();
 
   const seg0 = level3Seg0Input.value.trim();
-  const seg1 = level3Seg1Input.value.trim();
-  const seg2 = level3Seg2Input.value.trim();
-  const seg3 = level3Seg3Input.value.trim();
+  const blankSentence1 = level3BlankSentence1Input ? level3BlankSentence1Input.value.trim() : "";
+  const blankSentence2 = level3BlankSentence2Input ? level3BlankSentence2Input.value.trim() : "";
+  const blankSentence3 = level3BlankSentence3Input ? level3BlankSentence3Input.value.trim() : "";
+  const blankSide1 = level3BlankSide1Input ? level3BlankSide1Input.value : "left";
+  const blankSide2 = level3BlankSide2Input ? level3BlankSide2Input.value : "left";
+  const blankSide3 = level3BlankSide3Input ? level3BlankSide3Input.value : "left";
+  const blankVSentence1 = level3BlankVSentence1Input ? level3BlankVSentence1Input.value.trim() : "";
+  const blankVSentence2 = level3BlankVSentence2Input ? level3BlankVSentence2Input.value.trim() : "";
+  const blankVSentence3 = level3BlankVSentence3Input ? level3BlankVSentence3Input.value.trim() : "";
+  const blankVSide1 = level3BlankVSide1Input ? level3BlankVSide1Input.value : "above";
+  const blankVSide2 = level3BlankVSide2Input ? level3BlankVSide2Input.value : "above";
+  const blankVSide3 = level3BlankVSide3Input ? level3BlankVSide3Input.value : "above";
 
   if (!seg0) {
     showFormNotice(level3FormNotice, "Enter the question text before Blank 1.");
@@ -1108,13 +1126,8 @@ function handleAddLevel3Question(event) {
     }
   }
 
-  // Build prompt string
-  let prompt = seg0 + " [blank] " + (seg1 ? seg1 + " " : "") + "[blank]";
-  if (hasBlank3) {
-    prompt += (seg2 ? " " + seg2 : "") + " [blank]" + (seg3 ? " " + seg3 : "");
-  } else {
-    prompt += (seg2 ? " " + seg2 : "");
-  }
+  // Build prompt — only seg0 is the visible question; blanks follow
+  const prompt = seg0 + " [blank] [blank]" + (hasBlank3 ? " [blank]" : "");
 
   const blanks = [
     { choices: choices1, correctIndex: correct1Index },
@@ -1124,10 +1137,26 @@ function handleAddLevel3Question(event) {
     blanks.push({ choices: choices3, correctIndex: correct3Index });
   }
 
+  const blankSentences = [blankSentence1, blankSentence2];
+  if (hasBlank3) blankSentences.push(blankSentence3);
+
+  const blankSentenceSides = [blankSide1, blankSide2];
+  if (hasBlank3) blankSentenceSides.push(blankSide3);
+
+  const blankVerticalSentences = [blankVSentence1, blankVSentence2];
+  if (hasBlank3) blankVerticalSentences.push(blankVSentence3);
+
+  const blankVerticalSides = [blankVSide1, blankVSide2];
+  if (hasBlank3) blankVerticalSides.push(blankVSide3);
+
   level3QuestionBank.push({
     prompt,
     blanks,
-    segments: { seg0, seg1, seg2, seg3 }
+    segments: { seg0 },
+    blankSentences,
+    blankSentenceSides,
+    blankVerticalSentences,
+    blankVerticalSides
   });
 
   persistLevel3QuestionBank();
@@ -1392,6 +1421,19 @@ questionForm.addEventListener("submit", handleAddQuestion);
 dragQuestionForm.addEventListener("submit", handleAddDragQuestion);
 level3QuestionForm.addEventListener("submit", handleAddLevel3Question);
 level4QuestionForm.addEventListener("submit", handleAddLevel4Question);
+
+// ── Blank-side segmented toggle (shared for all add forms) ─
+document.addEventListener("click", function(e) {
+  var btn = e.target.closest(".blank-side-toggle .bst-btn");
+  if (!btn) return;
+  var toggle = btn.closest(".blank-side-toggle");
+  var targetId = toggle.dataset.target;
+  var hidden = document.getElementById(targetId);
+  if (!hidden) return;
+  toggle.querySelectorAll(".bst-btn").forEach(function(b) { b.classList.remove("is-active"); });
+  btn.classList.add("is-active");
+  hidden.value = btn.dataset.value;
+});
 dragLayoutTypeInput.addEventListener("change", syncDragFormVariant);
 toggleSavedListButton.addEventListener("click", toggleSavedQuestionList);
 savedQuestionList.addEventListener("click", handleSavedQuestionClick);

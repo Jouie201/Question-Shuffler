@@ -159,98 +159,161 @@ function renderCurrentQuestion() {
   promptContainer.innerHTML = "";
 
   var segments = question.prompt.split(/\[blank\]/i);
+
+  // 1. Prompt text with numbered placeholders
   var promptLine = document.createElement("div");
   promptLine.className = "q-prompt-line";
 
   segments.forEach(function(seg, si) {
-    // Text segment
     if (seg) {
       var textSpan = document.createElement("span");
       textSpan.className = "q-prompt-text";
       textSpan.textContent = seg;
       promptLine.appendChild(textSpan);
     }
-
-    // Dropdown for this blank position
-    if (si < question.blanks.length) {
-      var blank = question.blanks[si];
-      var selected = answers[qi][si]; // null or choice index
-      var isOpen = openDropdown === si;
-      var isSelected = selected !== null;
-      var isCorrectBlank = isChecked && isSelected && selected === blank.correctIndex;
-      var isIncorrectBlank = isChecked && isSelected && selected !== blank.correctIndex;
-
-      var wrapper = document.createElement("div");
-      var wrapperClasses = ["q-dropdown", "q-dropdown-inline"];
-      if (isOpen) wrapperClasses.push("is-open");
-      if (isCorrectBlank) wrapperClasses.push("is-correct");
-      if (isIncorrectBlank) wrapperClasses.push("is-incorrect");
-      wrapper.className = wrapperClasses.join(" ");
-      wrapper.dataset.bi = String(si);
-      wrapper.style.minWidth = measureLongestChoice(blank.choices) + "px";
-
-      // Trigger button
-      var trigger = document.createElement("button");
-      trigger.type = "button";
-      trigger.className = "q-dropdown-trigger";
-      trigger.disabled = isChecked;
-      trigger.dataset.bi = String(si);
-
-      var triggerVal = document.createElement("span");
-      if (isSelected) {
-        triggerVal.className = "q-dropdown-value";
-        triggerVal.textContent = blank.choices[selected];
-      } else {
-        triggerVal.className = "q-dropdown-value is-placeholder";
-        triggerVal.textContent = "Select";
-      }
-      var triggerArrow = document.createElement("span");
-      triggerArrow.className = "q-dropdown-arrow";
-      triggerArrow.setAttribute("aria-hidden", "true");
-      triggerArrow.textContent = "\u25be";
-      trigger.appendChild(triggerVal);
-      trigger.appendChild(triggerArrow);
-
-      // Options list
-      var list = document.createElement("ul");
-      list.className = "q-dropdown-list";
-      if (!isOpen) list.hidden = true;
-
-      blank.choices.forEach(function(choice, ci) {
-        var isChoiceSelected = selected === ci;
-        var isCorrectChoice = ci === blank.correctIndex;
-
-        var option = document.createElement("li");
-        var optClasses = ["q-dropdown-option"];
-        if (isChoiceSelected) optClasses.push("is-selected");
-        if (isChecked && isCorrectChoice) optClasses.push("is-correct");
-        if (isChecked && isChoiceSelected && !isCorrectChoice) optClasses.push("is-incorrect");
-        if (isChecked) optClasses.push("is-locked");
-        option.className = optClasses.join(" ");
-        option.dataset.bi = String(si);
-        option.dataset.ci = String(ci);
-
-        var text = document.createElement("span");
-        text.textContent = choice;
-        option.appendChild(text);
-        list.appendChild(option);
-      });
-
-      wrapper.appendChild(trigger);
-      wrapper.appendChild(list);
-
-      if (isIncorrectBlank) {
-        var hint = document.createElement("p");
-        hint.className = "q-correct-hint";
-        hint.textContent = "\u2713 " + blank.choices[blank.correctIndex];
-        wrapper.appendChild(hint);
-      }
-
-      promptLine.appendChild(wrapper);
-    }
   });
 
   promptContainer.appendChild(promptLine);
+
+  // 2. Blank dropdowns listed below the sentence
+  var blanksSection = document.createElement("div");
+  var blankLayout = question.blankLayout || "vertical";
+  blanksSection.className = "q-blanks-section" +
+    (blankLayout === "horizontal" ? " q-blanks-section--horizontal" : "") +
+    (blankLayout === "diagonal"   ? " q-blanks-section--diagonal"   : "");
+
+  question.blanks.forEach(function(blank, si) {
+    var selected = answers[qi][si];
+    var isOpen = openDropdown === si;
+    var isSelected = selected !== null;
+    var isCorrectBlank = isChecked && isSelected && selected === blank.correctIndex;
+    var isIncorrectBlank = isChecked && isSelected && selected !== blank.correctIndex;
+
+    var row = document.createElement("div");
+    row.className = "q-blank-row";
+
+    // Sentence text and which side it appears on
+    var customSentence = Array.isArray(question.blankSentences) && question.blankSentences[si]
+      ? question.blankSentences[si]
+      : "";
+    var sentenceSide = Array.isArray(question.blankSentenceSides) && question.blankSentenceSides[si] === "right"
+      ? "right"
+      : "left";
+
+    function makeSentenceSpan() {
+      var span = document.createElement("span");
+      span.className = "q-blank-sentence";
+      span.textContent = customSentence;
+      return span;
+    }
+
+    // Append left-side sentence before the dropdown
+    if (customSentence && sentenceSide === "left") {
+      row.appendChild(makeSentenceSpan());
+    }
+
+    var wrapper = document.createElement("div");
+    var wrapperClasses = ["q-dropdown", "q-dropdown-inline"];
+    if (isOpen) wrapperClasses.push("is-open");
+    if (isCorrectBlank) wrapperClasses.push("is-correct");
+    if (isIncorrectBlank) wrapperClasses.push("is-incorrect");
+    wrapper.className = wrapperClasses.join(" ");
+    wrapper.dataset.bi = String(si);
+    wrapper.style.minWidth = measureLongestChoice(blank.choices) + "px";
+
+    // Trigger button
+    var trigger = document.createElement("button");
+    trigger.type = "button";
+    trigger.className = "q-dropdown-trigger";
+    trigger.disabled = isChecked;
+    trigger.dataset.bi = String(si);
+
+    var triggerVal = document.createElement("span");
+    if (isSelected) {
+      triggerVal.className = "q-dropdown-value";
+      triggerVal.textContent = blank.choices[selected];
+    } else {
+      triggerVal.className = "q-dropdown-value is-placeholder";
+      triggerVal.textContent = "Select";
+    }
+    var triggerArrow = document.createElement("span");
+    triggerArrow.className = "q-dropdown-arrow";
+    triggerArrow.setAttribute("aria-hidden", "true");
+    triggerArrow.textContent = "\u25be";
+    trigger.appendChild(triggerVal);
+    trigger.appendChild(triggerArrow);
+
+    // Options list
+    var list = document.createElement("ul");
+    list.className = "q-dropdown-list";
+    if (!isOpen) list.hidden = true;
+
+    blank.choices.forEach(function(choice, ci) {
+      var isChoiceSelected = selected === ci;
+      var isCorrectChoice = ci === blank.correctIndex;
+
+      var option = document.createElement("li");
+      var optClasses = ["q-dropdown-option"];
+      if (isChoiceSelected) optClasses.push("is-selected");
+      if (isChecked && isCorrectChoice) optClasses.push("is-correct");
+      if (isChecked && isChoiceSelected && !isCorrectChoice) optClasses.push("is-incorrect");
+      if (isChecked) optClasses.push("is-locked");
+      option.className = optClasses.join(" ");
+      option.dataset.bi = String(si);
+      option.dataset.ci = String(ci);
+
+      var text = document.createElement("span");
+      text.textContent = choice;
+      option.appendChild(text);
+      list.appendChild(option);
+    });
+
+    wrapper.appendChild(trigger);
+    wrapper.appendChild(list);
+
+    if (isIncorrectBlank) {
+      var hint = document.createElement("p");
+      hint.className = "q-correct-hint";
+      hint.textContent = "\u2713 " + blank.choices[blank.correctIndex];
+      wrapper.appendChild(hint);
+    }
+
+    row.appendChild(wrapper);
+
+    // Append right-side sentence after the dropdown
+    if (customSentence && sentenceSide === "right") {
+      row.appendChild(makeSentenceSpan());
+    }
+
+    // Vertical sentence (above or below the row)
+    var vSentenceText = Array.isArray(question.blankVerticalSentences) && question.blankVerticalSentences[si]
+      ? question.blankVerticalSentences[si]
+      : "";
+    var vSentenceSide = Array.isArray(question.blankVerticalSides) && question.blankVerticalSides[si] === "below"
+      ? "below"
+      : "above";
+
+    if (vSentenceText) {
+      var vEl = document.createElement("div");
+      vEl.className = "q-blank-vsentence q-blank-vsentence--" + vSentenceSide;
+      vEl.textContent = vSentenceText;
+
+      var group = document.createElement("div");
+      group.className = "q-blank-group";
+      if (vSentenceSide === "above") {
+        group.appendChild(vEl);
+        group.appendChild(row);
+      } else {
+        group.appendChild(row);
+        group.appendChild(vEl);
+      }
+      blanksSection.appendChild(group);
+    } else {
+      blanksSection.appendChild(row);
+    }
+  });
+
+  promptContainer.appendChild(blanksSection);
 
   updateCount();
   updateButtonState();
